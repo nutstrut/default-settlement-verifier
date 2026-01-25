@@ -2,7 +2,7 @@ Default Settlement Verifier
 
 Deterministic, neutral verification for agent-to-agent and programmatic settlements.
 
-Landing page: https://defaultverifier.com
+[Landing page](https://defaultverifier.com)
 
 Overview
 
@@ -134,8 +134,9 @@ The live endpoint is the canonical interface.
 
 Health Check (GET)
 
-https://defaultverifier.com/health
-
+`POST https://defaultverifier.com/verify`
+`https://defaultverifier.com/health`
+ 
 Non-Goals
 
 The Default Settlement Verifier explicitly does not attempt to:
@@ -172,4 +173,4 @@ Contact
 
 Project discussions and updates are shared via:
 
-@defaultsettle
+[@defaultsettle](https://x.com/defaultsettle)
