@@ -1,0 +1,134 @@
+# Default Settlement Verifier
+
+Deterministic, neutral verification for agent-to-agent and programmatic settlements.
+
+Landing page: [Default Verifier Landing Page](https://defaultverifier.com)
+
+## Overview
+
+The Default Settlement Verifier is a stateless verification service that evaluates whether a claimed settlement outcome satisfies predefined conditions and returns a signed, deterministic verdict (`PASS` or `FAIL`). It acts as a trust-minimized verification primitive in automated payment, escrow, and agent-based workflows (e.g., x402-style flows), without custody, mediation, or subjective judgment.
+
+## What It Does
+
+The verifier accepts a structured verification request describing a settlement claim and evaluates it against deterministic rules. It returns:
+
+- A binary verdict (`PASS` / `FAIL`)
+- A confidence score
+- A cryptographic signature
+- Optional fee metadata (fee-aware, currently not enforced)
+
+The verifier:
+
+- Does **not** hold funds  
+- Does **not** initiate payments  
+- Does **not** maintain session state  
+- Does **not** rely on identity, reputation, or trust assumptions  
+
+> “Given this claim and these conditions, does it verify?”
+
+## Core Properties
+
+- **Deterministic** — Identical inputs always produce identical outputs  
+- **Stateless** — Every call is independent  
+- **Neutral** — No buyer/seller bias, no incentives, no governance layer  
+- **Composable** — Plugs into agent frameworks, payment rails, and settlement protocols  
+- **Auditable** — Signed responses allow downstream verification and logging
+
+## Intended Use Cases
+
+- Agent-to-agent payments requiring post-condition verification  
+- x402-style pay-after-execution flows  
+- Automated escrow or conditional release systems  
+- Buyer protection primitives without custody  
+- Programmatic settlement validation in AI workflows
+
+## Canonical Verification Endpoint (POST)
+
+`POST /verify`
+
+> Note: `/verify` accepts **POST requests only**. Browsers will return `Cannot GET /verify`.
+
+### Example Request
+
+(spec = expected output, output = observed output)
+
+
+{
+  "task_id": "example-001",
+  "spec": { "expected_output": "hash_or_descriptor" },
+  "output": { "expected_output": "hash_or_descriptor" }
+}
+
+### PowerShell Example
+
+Invoke-RestMethod -Uri https://defaultverifier.com/verify -Method POST -ContentType 'application/json' -Body '{"task_id":"example-001","spec":{"expected_output":"hash_or_descriptor"},"output":{"expected_output":"hash_or_descriptor"}}'
+
+### Example Response
+
+{
+  "verifier_name": "Default Settlement Verifier",
+  "verifier_description": "A stateless, deterministic verifier that acts as the neutral default for agent settlement in x402-style workflows.",
+  "verifier_id": "erc8004:verifier:v1",
+  "spec_version": "1.1",
+  "finalized": true,
+  "task_id": "example-001",
+  "spec": { "expected_output": "hash_or_descriptor" },
+  "output": { "expected_output": "hash_or_descriptor" },
+  "match_mode": null,
+  "verdict": "PASS",
+  "confidence": 1,
+  "reason_code": "MATCH",
+  "depthReached": 0,
+  "nodeCount": 0,
+  "timestamp": "2026-01-25T04:38:12.991Z",
+  "fee_due": 0.001,
+  "fee_currency": "USDC",
+  "verifier_wallet": "4DbbwiCrpFSZnBFneyksmXyXiC69k4RzdiQ3fjoXmE31",
+  "signature": "4uRX3MjNoqBtxC4bUUFdd1dvCNPNscd7HHUJDEjK1mDt"
+}
+
+## Health Check (GET)
+
+`GET /health`
+
+### Example Request
+
+curl https://defaultverifier.com/health
+
+### Example Response
+
+{
+  "status": "ok",
+  "timestamp": "2026-01-25T04:40:00.000Z"
+}
+
+## Non-Goals
+
+The Default Settlement Verifier explicitly does **not**:
+
+- Act as an oracle of subjective truth  
+- Resolve disputes  
+- Store or escrow funds  
+- Enforce payment  
+- Provide reputation or identity services  
+
+Those layers belong upstream or downstream.
+
+## Roadmap (Non-Commitment)
+
+- Expanded claim schemas  
+- Optional replay-safe receipts  
+- Public verification key endpoint  
+- Optional metrics endpoint  
+
+No timelines are guaranteed.
+
+## License
+
+MIT License
+
+## Contact
+
+Project discussions and updates are shared via:
+
+[@defaultsettle](https://x.com/defaultsettle)
