@@ -2,6 +2,10 @@ Default Settlement Verifier
 
 Deterministic, neutral verification for agent-to-agent and programmatic settlements.
 
+Landing page: https://defaultverifier.com
+
+Overview
+
 The Default Settlement Verifier is a stateless verification service that evaluates whether a claimed settlement outcome satisfies predefined conditions and returns a signed, deterministic verdict (PASS or FAIL).
 
 It is designed to act as a trust-minimized verification primitive in automated payment, escrow, and agent-based workflows (e.g., x402-style flows), without custody, mediation, or subjective judgment.
@@ -18,7 +22,7 @@ A confidence score
 
 A cryptographic signature
 
-Optional fee metadata (fee-aware, currently zero-enforced)
+Optional fee metadata (fee-aware, currently not enforced)
 
 The verifier:
 
@@ -36,15 +40,15 @@ It simply answers one question:
 
 Core Properties
 
-Deterministic — Identical inputs always produce identical outputs.
+Deterministic — Identical inputs always produce identical outputs
 
-Stateless — No memory of prior requests; every call is independent.
+Stateless — No memory of prior requests; every call is independent
 
-Neutral — No buyer/seller bias, no incentives, no governance layer.
+Neutral — No buyer/seller bias, no incentives, no governance layer
 
-Composable — Designed to plug into agent frameworks, payment rails, and settlement protocols.
+Composable — Designed to plug into agent frameworks, payment rails, and settlement protocols
 
-Auditable — Signed responses allow downstream verification and logging.
+Auditable — Signed responses allow downstream verification and logging
 
 Intended Use Cases
 
@@ -59,17 +63,18 @@ Buyer protection primitives without custody
 Programmatic settlement validation in AI workflows
 
 Canonical Verification Endpoint
-
-POST
-
-https://defaultverifier.com/verify
+POST https://defaultverifier.com/verify
 
 
-Content-Type
+Content-Type:
 
 application/json
 
+
+Note: /verify accepts POST requests only. Browsers will return Cannot GET /verify.
+
 Example Request (current deployed system)
+
 {
   "task_id": "example-001",
   "spec": {
@@ -107,21 +112,29 @@ Example Response
   "signature": "4uRX3MjNoqBtxC4bUUFdd1dvCNPNscd7HHUJDEjK1mDt"
 }
 
+Notes:
 
-Note: The spec field is the expected output, output is the observed output. The verifier compares them and returns a deterministic verdict. The match_mode can be added later for more complex comparisons.
+spec represents the expected output
+
+output represents the observed output
+
+The verifier compares them and returns a deterministic verdict
+
+match_mode may be added in future versions for more complex comparisons
 
 Status
 
 ✅ Live
-
 ✅ 24/7 available
-
 ✅ Production infrastructure
-
 ⚠️ API surface intentionally minimal (v1)
 
-There is no separate “test” or “sandbox” environment.
+There is no separate test or sandbox environment.
 The live endpoint is the canonical interface.
+
+Health Check (GET)
+
+https://defaultverifier.com/health
 
 Non-Goals
 
@@ -159,4 +172,4 @@ Contact
 
 Project discussions and updates are shared via:
 
-Twitter: @defaultsettle
+@defaultsettle
