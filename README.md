@@ -1,13 +1,23 @@
+cat >> README.md
 # Default Settlement Verifier
 
 Deterministic, neutral verification for agent-to-agent and programmatic settlements.
 
-Landing page: [Default Verifier Landing Page](https://defaultverifier.com)
+Landing page: https://defaultverifier.com
+
+---
 
 ## Overview
 
-The Default Settlement Verifier is a stateless verification service that evaluates whether a claimed settlement outcome satisfies predefined conditions and returns a signed, deterministic verdict (`PASS` or `FAIL`). It acts as a trust-minimized verification primitive in automated payment, escrow, and agent-based workflows (e.g., x402-style flows), without custody, mediation, or subjective judgment.
+The Default Settlement Verifier is a stateless verification service that evaluates whether a claimed settlement outcome satisfies predefined conditions under deterministic rules.
 
+It answers one question only:
+
+> “Given this claim and these conditions, does it verify?”
+
+It produces **signed, replayable truth**, not coordination, custody, or enforcement.
+
+---
 ## What It Does
 
 The verifier accepts a structured verification request describing a settlement claim and evaluates it against deterministic rules. It returns:
@@ -15,43 +25,45 @@ The verifier accepts a structured verification request describing a settlement c
 - A binary verdict (`PASS` / `FAIL`)
 - A confidence score
 - A cryptographic signature
-- Optional fee metadata (fee-aware, currently not enforced)
+- Optional fee metadata (fee-aware; currently not enforced)
 
 The verifier:
 
-- Does **not** hold funds  
-- Does **not** initiate payments  
-- Does **not** maintain session state  
-- Does **not** rely on identity, reputation, or trust assumptions  
+- Does **not** hold funds
+- Does **not** initiate payments
+- Does **not** maintain session state
+- Does **not** rely on identity, reputation, or trust assumptions
 
-> “Given this claim and these conditions, does it verify?”
+---
 
 ## Core Properties
 
-- **Deterministic** — Identical inputs always produce identical outputs  
-- **Stateless** — Every call is independent  
-- **Neutral** — No buyer/seller bias, no incentives, no governance layer  
-- **Composable** — Plugs into agent frameworks, payment rails, and settlement protocols  
+- **Deterministic** — Identical inputs always produce identical signed results
+- **Stateless** — Every call is independent
+- **Neutral** — No buyer/seller bias, no incentives, no governance layer
+- **Composable** — Plugs into agent frameworks, payment rails, and settlement protocols
 - **Auditable** — Signed responses allow downstream verification and logging
 
+---
 ## Intended Use Cases
 
-- Agent-to-agent payments requiring post-condition verification  
-- x402-style pay-after-execution flows  
-- Automated escrow or conditional release systems  
-- Buyer protection primitives without custody  
+- Agent-to-agent payments requiring post-condition verification
+- x402-style pay-after-execution flows
+- Automated escrow or conditional release systems
+- Buyer protection primitives without custody
 - Programmatic settlement validation in AI workflows
+
+---
 
 ## Canonical Verification Endpoint (POST)
 
-`POST /verify`
+POST https://defaultverifier.com/verify
 
-> Note: `/verify` accepts **POST requests only**. Browsers will return `Cannot GET /verify`.
+Important:
+This endpoint accepts POST requests only.
+Browsers will show “Cannot GET /verify”. This is expected behavior.
 
-### Example Request
-
-(spec = expected output, output = observed output)
-
+Example request:
 
 {
   "task_id": "example-001",
@@ -59,76 +71,122 @@ The verifier:
   "output": { "expected_output": "hash_or_descriptor" }
 }
 
-### PowerShell Example
+---
+## SettlementWitness (v0)
 
-Invoke-RestMethod -Uri https://defaultverifier.com/verify -Method POST -ContentType 'application/json' -Body '{"task_id":"example-001","spec":{"expected_output":"hash_or_descriptor"},"output":{"expected_output":"hash_or_descriptor"}}'
+SettlementWitness is a thin, stateless wrapper that calls the Default Settlement Verifier and returns a replay-stable receipt for agent workflows.
 
-### Example Response
+It adds:
+- no state
+- no judgment
+- no retries
+- no facilitation logic
 
+### Canonical Endpoints
+
+POST https://defaultverifier.com/settlement-witness
+GET  https://defaultverifier.com/manifest
+
+Note:
+- POST /settlement-witness is POST-only.
+- GET /settlement-witness returns 405 by design.
+
+### Example (PASS)
+
+Request:
+curl -s -X POST https://defaultverifier.com/settlement-witness \
+  -H "Content-Type: application/json" \
+  -d '{
+    "task_id": "example-002",
+    "spec": { "expected": "foo" },
+    "output": { "expected": "foo" }
+  }'
+
+Minimal response shape (trimmed):
 {
-  "verifier_name": "Default Settlement Verifier",
-  "verifier_description": "A stateless, deterministic verifier that acts as the neutral default for agent settlement in x402-style workflows.",
-  "verifier_id": "erc8004:verifier:v1",
-  "spec_version": "1.1",
-  "finalized": true,
-  "task_id": "example-001",
-  "spec": { "expected_output": "hash_or_descriptor" },
-  "output": { "expected_output": "hash_or_descriptor" },
-  "match_mode": null,
-  "verdict": "PASS",
-  "confidence": 1,
-  "reason_code": "MATCH",
-  "depthReached": 0,
-  "nodeCount": 0,
-  "timestamp": "2026-01-25T04:38:12.991Z",
-  "fee_due": 0.001,
-  "fee_currency": "USDC",
-  "verifier_wallet": "4DbbwiCrpFSZnBFneyksmXyXiC69k4RzdiQ3fjoXmE31",
-  "signature": "4uRX3MjNoqBtxC4bUUFdd1dvCNPNscd7HHUJDEjK1mDt"
+  "witness": "SettlementWitness",
+  "witness_version": "v0",
+  "task_id": "example-002",
+  "verifier_response": {
+    "verdict": "PASS",
+    "reason_code": "MATCH",
+    "signature": "..."
+  },
+  "witness_timestamp": "...",
+  "receipt_id": "..."
 }
 
-## Health Check (GET)
+---
 
-`GET /health`
+## Determinism & Signatures (Replay Stability)
 
-### Example Request
+- timestamp and witness_timestamp may change on each call (observability).
+- for identical inputs (task_id, spec, output), the verifier signature is stable.
+- receipt_id is derived from the verifier signature and is stable for identical inputs.
 
-curl https://defaultverifier.com/health
+---
 
-### Example Response
+## Endpoint Behavior (Expected)
 
-{
-  "status": "ok",
-  "timestamp": "2026-01-25T04:40:00.000Z"
-}
+- POST /verify → works (GET not supported)
+- POST /settlement-witness → works (GET returns 405)
+- GET /manifest → works
 
+---
+## OpenClaw Compatibility
+
+SettlementWitness is compatible with OpenClaw via a drop-in skill definition included in this repository:
+
+openclaw/skills/settlement-witness/SKILL.md
+
+The skill calls the public HTTPS endpoint:
+
+POST https://defaultverifier.com/settlement-witness
+
+No local services are required.
+
+---
+
+## Deployment Notes (Factual)
+
+- Verifier and SettlementWitness are served via HTTPS behind NGINX on defaultverifier.com
+- SettlementWitness runs persistently under systemd and is proxied via NGINX (no raw port exposure)
+- Cloudflare cache bypass is enabled for API routes (/verify, /settlement-witness, /manifest)
+
+---
 ## Non-Goals
 
 The Default Settlement Verifier explicitly does **not**:
 
-- Act as an oracle of subjective truth  
-- Resolve disputes  
-- Store or escrow funds  
-- Enforce payment  
-- Provide reputation or identity services  
+- Act as an oracle of subjective truth
+- Resolve disputes
+- Store or escrow funds
+- Enforce payment
+- Provide reputation or identity services
 
 Those layers belong upstream or downstream.
 
+---
+
 ## Roadmap (Non-Commitment)
 
-- Expanded claim schemas  
-- Optional replay-safe receipts  
-- Public verification key endpoint  
-- Optional metrics endpoint  
+- Expanded claim schemas
+- Optional replay-safe receipts
+- Public verification key endpoint
+- Optional metrics endpoint
 
 No timelines are guaranteed.
+
+---
 
 ## License
 
 MIT License
 
+---
+
 ## Contact
 
 Project discussions and updates are shared via:
 
-[@defaultsettle](https://x.com/defaultsettle)
+https://x.com/defaultsettle
