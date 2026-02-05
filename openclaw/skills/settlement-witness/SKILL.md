@@ -1,5 +1,5 @@
 ---
-name: settlement_witness
+name: settlement-witness
 description: "OpenClaw skill: fetch replay-stable PASS/FAIL receipts from the public SettlementWitness HTTPS endpoint. Stateless. Deterministic. Signed."
 ---
 
