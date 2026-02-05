@@ -145,6 +145,16 @@ POST https://defaultverifier.com/settlement-witness
 
 No local services are required.
 
+## Agent Wrappers & Skills
+
+SettlementWitness is a stateless witness wrapper that issues replay-stable
+verification receipts for post-task settlement workflows.
+
+It is compatible with:
+- Heurist Mesh (submission pending)
+- MCP invocation patterns
+- OpenClaw skills (drop-in wrapper included)
+
 ---
 
 ## Deployment Notes (Factual)
