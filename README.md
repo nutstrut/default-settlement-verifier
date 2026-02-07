@@ -1,4 +1,3 @@
-cat >> README.md
 # Default Settlement Verifier
 
 Deterministic, neutral verification for agent-to-agent and programmatic settlements.
@@ -18,6 +17,7 @@ It answers one question only:
 It produces **signed, replayable truth**, not coordination, custody, or enforcement.
 
 ---
+
 ## What It Does
 
 The verifier accepts a structured verification request describing a settlement claim and evaluates it against deterministic rules. It returns:
@@ -45,6 +45,7 @@ The verifier:
 - **Auditable** — Signed responses allow downstream verification and logging
 
 ---
+
 ## Intended Use Cases
 
 - Agent-to-agent payments requiring post-condition verification
@@ -59,19 +60,20 @@ The verifier:
 
 POST https://defaultverifier.com/verify
 
-Important:
-This endpoint accepts POST requests only.
+**Important:**  
+This endpoint accepts POST requests only.  
 Browsers will show “Cannot GET /verify”. This is expected behavior.
 
 Example request:
 
-{
-  "task_id": "example-001",
-  "spec": { "expected_output": "hash_or_descriptor" },
-  "output": { "expected_output": "hash_or_descriptor" }
-}
+    {
+      "task_id": "example-001",
+      "spec": { "expected_output": "hash_or_descriptor" },
+      "output": { "expected_output": "hash_or_descriptor" }
+    }
 
 ---
+
 ## SettlementWitness (v0)
 
 SettlementWitness is a thin, stateless wrapper that calls the Default Settlement Verifier and returns a replay-stable receipt for agent workflows.
@@ -84,60 +86,93 @@ It adds:
 
 ### Canonical Endpoints
 
-POST https://defaultverifier.com/settlement-witness
-GET  https://defaultverifier.com/manifest
+- POST https://defaultverifier.com/settlement-witness
+- GET  https://defaultverifier.com/manifest
 
-Note:
-- POST /settlement-witness is POST-only.
-- GET /settlement-witness returns 405 by design.
+Notes:
+- POST `/settlement-witness` is POST-only.
+- GET `/settlement-witness` returns 405 by design.
+
+---
 
 ### Example (PASS)
 
-Request:
-curl -s -X POST https://defaultverifier.com/settlement-witness \
-  -H "Content-Type: application/json" \
-  -d '{
-    "task_id": "example-002",
-    "spec": { "expected": "foo" },
-    "output": { "expected": "foo" }
-  }'
+    curl -s -X POST https://defaultverifier.com/settlement-witness \
+      -H "Content-Type: application/json" \
+      -d '{
+        "task_id": "example-002",
+        "spec": { "expected": "foo" },
+        "output": { "expected": "foo" }
+      }'
 
 Minimal response shape (trimmed):
-{
-  "witness": "SettlementWitness",
-  "witness_version": "v0",
-  "task_id": "example-002",
-  "verifier_response": {
-    "verdict": "PASS",
-    "reason_code": "MATCH",
-    "signature": "..."
-  },
-  "witness_timestamp": "...",
-  "receipt_id": "..."
-}
+
+    {
+      "witness": "SettlementWitness",
+      "witness_version": "v0",
+      "task_id": "example-002",
+      "verifier_response": {
+        "verdict": "PASS",
+        "reason_code": "MATCH",
+        "signature": "..."
+      },
+      "witness_timestamp": "...",
+      "receipt_id": "..."
+    }
+
+---
+
+## MCP (Canonical)
+
+SettlementWitness is available via MCP for agent-native workflows.
+
+- **MCP Server:** https://defaultverifier.com/mcp
+- **Tool:** `settlement_witness`
+- **Arguments (required):**
+  - `task_id` (string)
+  - `spec` (object)
+  - `output` (object)
+- **Returns:** receipt JSON (verbatim)
+
+**Determinism guarantee:**
+Identical inputs produce the same `receipt_id` and verifier signature.
+Timestamps may differ.
+
+---
+
+## Security & Settlement Gating
+
+Default Settlement Verifier can serve as a lightweight mitigation layer in autonomous workflows:
+
+- **Proof-of-Delivery** — Deterministic PASS/FAIL verdicts verify outputs match task specifications before settlement.
+- **Settlement Gating** — Payments or downstream actions can be conditioned on verifiable completion.
+- **Dispute Reduction** — Signed receipts provide replayable evidence for post-task settlement decisions.
+
+The verifier does not enforce outcomes or custody funds; it produces neutral, signed verification receipts.
 
 ---
 
 ## Determinism & Signatures (Replay Stability)
 
-- timestamp and witness_timestamp may change on each call (observability).
-- for identical inputs (task_id, spec, output), the verifier signature is stable.
-- receipt_id is derived from the verifier signature and is stable for identical inputs.
+- `timestamp` and `witness_timestamp` may change on each call (observability).
+- For identical inputs (`task_id`, `spec`, `output`), the verifier signature is stable.
+- `receipt_id` is derived from the verifier signature and is stable for identical inputs.
 
 ---
 
 ## Endpoint Behavior (Expected)
 
-- POST /verify → works (GET not supported)
-- POST /settlement-witness → works (GET returns 405)
-- GET /manifest → works
+- POST `/verify` → works (GET not supported)
+- POST `/settlement-witness` → works (GET returns 405)
+- GET `/manifest` → works
 
 ---
+
 ## OpenClaw Compatibility
 
 SettlementWitness is compatible with OpenClaw via a drop-in skill definition included in this repository:
 
-openclaw/skills/settlement-witness/SKILL.md
+    openclaw/skills/settlement-witness/SKILL.md
 
 The skill calls the public HTTPS endpoint:
 
@@ -159,11 +194,12 @@ It is compatible with:
 
 ## Deployment Notes (Factual)
 
-- Verifier and SettlementWitness are served via HTTPS behind NGINX on defaultverifier.com
-- SettlementWitness runs persistently under systemd and is proxied via NGINX (no raw port exposure)
-- Cloudflare cache bypass is enabled for API routes (/verify, /settlement-witness, /manifest)
+- Verifier and SettlementWitness are served via HTTPS behind NGINX on `defaultverifier.com`
+- SettlementWitness runs persistently and is proxied via NGINX (no raw port exposure)
+- Cloudflare cache bypass is enabled for API routes (`/verify`, `/settlement-witness`, `/manifest`)
 
 ---
+
 ## Non-Goals
 
 The Default Settlement Verifier explicitly does **not**:
@@ -197,6 +233,6 @@ MIT License
 
 ## Contact
 
-Project discussions and updates are shared via:
+Project discussions and updates:
 
 https://x.com/defaultsettle

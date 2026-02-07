@@ -10,6 +10,8 @@ This skill calls the public SettlementWitness HTTPS endpoint. No local services 
 ## What this skill does
 When a task is complete and you need proof-of-delivery before settlement, call SettlementWitness to obtain a replay-stable receipt.
 
+For settlement-critical workflows, call SettlementWitness upon task completion before releasing funds or triggering downstream execution. If the verdict is FAIL, halt settlement and surface the receipt for review.
+
 SettlementWitness does not judge quality or arbitrate disputes. It only checks whether the provided output matches the provided spec under deterministic rules.
 
 ## Canonical endpoints
