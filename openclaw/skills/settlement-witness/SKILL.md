@@ -1,45 +1,142 @@
+# SettlementWitness
+
+Deterministic verification gate for agent execution and x402 settlement.
+
+SettlementWitness provides **replay-stable proof-of-delivery receipts** that allow agents, tools, and orchestrators to **safely gate downstream execution** based on whether a claimed outcome actually satisfies predefined conditions.
+
+It does not coordinate, enforce, or hold funds.
+It answers one question only:
+
+> “Given this claim and these conditions — does it verify?”
+
+
 ---
-name: settlement-witness
-description: "OpenClaw skill: fetch replay-stable PASS/FAIL receipts from the public SettlementWitness HTTPS endpoint. Stateless. Deterministic. Signed."
+
+## What This Skill Does
+
+SettlementWitness evaluates a claimed result against a deterministic specification and returns a signed verification receipt.
+
+The receipt is:
+- Deterministic (same inputs → => same receipt_id + signature)
+- Replayable
+- Neutral
+- Safe to cache, forward, and audit
+
+This allows agent systems to **halt, continue, or settle** based on objective verification rather than trust or heuristics.
+
 ---
 
-# SettlementWitness (OpenClaw Skill)
+## Canonical Endpoints
 
-This skill calls the public SettlementWitness HTTPS endpoint. No local services are required.
+**MCP Adapter (install this):**  
+https://defaultverifier.com/mcp
 
-## What this skill does
-When a task is complete and you need proof-of-delivery before settlement, call SettlementWitness to obtain a replay-stable receipt.
+**REST Witness Endpoint:**  
+https://defaultverifier.com/settlement-witness
 
-For settlement-critical workflows, call SettlementWitness upon task completion before releasing funds or triggering downstream execution. If the verdict is FAIL, halt settlement and surface the receipt for review.
+**Public MCP Health:**  
+https://defaultverifier.com/mcp-healthz
 
-SettlementWitness does not judge quality or arbitrate disputes. It only checks whether the provided output matches the provided spec under deterministic rules.
+---
 
-## Canonical endpoints
-- POST https://defaultverifier.com/settlement-witness
-- GET  https://defaultverifier.com/manifest
+## Tool
 
-## Required input shape
-Provide:
-- task_id (string)
-- spec (object)
-- output (object)
+### `settlement_witness`
 
-## Example request
-{
-  "task_id": "example-002",
-  "spec": { "expected": "foo" },
-  "output": { "expected": "foo" }
-}
+Verifies that an output satisfies a deterministic specification and returns a signed receipt.
 
-## How to interpret
-- If verifier_response.verdict == PASS: verified completion
-- If verifier_response.verdict == FAIL: not verified (do not settle automatically)
-- receipt_id is the stable identifier to store/log/share
+**Inputs**
+- `task_id` — stable identifier for the task
+- `spec` – deterministic conditions expected to be satisfied
+- `output` – claimed result to be verified
 
-## Safety notes
-- Never send secrets (private keys, API keys) in spec/output.
-- Keep spec/output minimal and deterministic (hashes/IDs are ideal).
+**Outputs**
+- `verdict` — `PASS` or `FAIL`
+- `confidence` — numeric confidence score
+- `receipt_id` – deterministic receipt identifier
+- `signature` – cryptographic proof
+- `timestamp` – verification time
 
-## Install (for OpenClaw users)
-Copy this folder into your OpenClaw skills directory as:
-settlement-witness/SKILL.md
+---
+
+## Gating Semantics (Important)
+
+This skill is designed to be used as a **verification gate**.
+
+- **PASS** – downstream execution may proceed
+- **FAIL** – execution SHOULD halt or roll back
+
+SettlementWitness does not retry, repair, or reinterpret results.
+A FAIL is an explicit signal that conditions were **not satisfied**.
+
+
+---
+
+## Common Use Cases
+
+### x402 Payment Gating
+Verify that a task completed correctly **before** releasing or settling payment.
+
+### Post-Task Verification
+Confirm that an agent actually produced what it claimed before chaining further actions.
+
+### Proof-of-Delivery Receipts
+Generate deterministic receipts that can be replayed, audited, or shared across systems.
+
+### Malicious or Broken Skill Mitigation
+Prevent downstream agents from acting on incorrect, partial, or fabricated outputs.
+
+### Agent Orchestration Safety
+Use objective verification instead of trust when coordinating multi-agent workflows.
+
+---
+
+## Determinism Guarantee
+
+SettlementWitness is fully deterministic.
+
+Given the same:
+- `task_id`
+- `spec`
+- `output`
+
+It will always return:
+- the same `receipt_id`
+- the same `signature`
+- the same verdict
+
+
+This makes receipts safe for caching, replay, and dispute resolution.
+
+
+---
+
+## What This Is Not
+
+- Not a malware scanner
+- Not an LLM judge
+- Not a coordinator or enforcer
+- Not a payment processor
+
+It is neutral verification infrastructure.
+
+---
+
+## Identity vs Delivery Proof
+
+SettlementWitness provides **delivery proof**, not identity.
+
+It complements ERC-8004 and identity systems by answering:
+> “Did this outcome satisfy the rules?”
+
+— not:
+> “Who is this agent?”
+
+
+---
+
+## When to Use SettlementWitness
+
+Use this skill when **truth must be established before action**, settlement, or escalation.
+
+If correctness matters, verify first.
