@@ -127,6 +127,7 @@ Minimal response shape (trimmed):
 SettlementWitness is available via MCP for agent-native workflows.
 
 - **MCP Server:** https://defaultverifier.com/mcp
+- **Health:** https://defaultverifier.com/mcp-healthz
 - **Tool:** `settlement_witness`
 - **Arguments (required):**
   - `task_id` (string)
