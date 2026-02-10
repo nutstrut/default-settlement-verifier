@@ -1,0 +1,116 @@
+openapi: 3.0.3
+info:
+  title: SettlementWitness API
+  version: "0.1.0"
+  description: |
+    SettlementWitness is a stateless, deterministic witness service that forwards claims to the Default Settlement Verifier
+    and returns a signed, replayable receipt-style response.
+
+servers:
+  - url: https://defaultverifier.com
+
+paths:
+  /settlement-witness:
+    post:
+      operationId: settlementWitness
+      summary: Witness a settlement claim (deterministic verification)
+      description: |
+        Submits a settlement claim (task_id, spec, output) to SettlementWitness.
+        The witness calls the verifier and returns the verifier response plus witness metadata.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettlementWitnessRequest'
+            examples:
+              simpleMatch:
+                summary: Matching spec/output
+                value:
+                  task_id: public-test
+                  spec:
+                    expected: foo
+                  output:
+                    expected: foo
+      responses:
+        "200":
+          description: Witness response (includes embedded verifier response)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettlementWitnessResponse'
+        "400":
+          description: Invalid request payload
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "500":
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /manifest:
+    get:
+      operationId: getManifest
+      summary: Get service manifest
+      description: Returns the public manifest describing the service endpoints and metadata.
+      responses:
+        "200":
+          description: Manifest JSON
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+
+components:
+  schemas:
+    SettlementWitnessRequest:
+      type: object
+      required: [task_id, spec, output]
+      properties:
+        task_id:
+          type: string
+          description: Client-provided identifier for the verification task.
+        spec:
+          type: object
+          description: The expected conditions for the settlement claim.
+          additionalProperties: true
+        output:
+          type: object
+          description: The produced output/result to be checked against the spec.
+          additionalProperties: true
+
+    SettlementWitnessResponse:
+      type: object
+      required: [witness, witness_version, task_id, verifier_endpoint, verifier_response]
+      properties:
+        witness:
+          type: string
+          example: SettlementWitness
+        witness_version:
+          type: string
+          example: v0
+        task_id:
+          type: string
+        verifier_endpoint:
+          type: string
+          format: uri
+          example: https://defaultverifier.com/verify
+        verifier_response:
+          $ref: '#/components/schemas/VerifierResponse'
+
+    VerifierResponse:
+      type: object
+      description: Verifier decision payload (exact fields may evolve; treated as an object).
+      additionalProperties: true
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
