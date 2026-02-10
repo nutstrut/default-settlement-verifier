@@ -1,3 +1,5 @@
+Skill Version: 0.0.4
+
 # SettlementWitness
 
 Deterministic verification gate for agent execution and x402 settlement.
