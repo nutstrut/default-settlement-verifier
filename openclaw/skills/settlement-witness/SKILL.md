@@ -140,3 +140,14 @@ It complements ERC-8004 and identity systems by answering:
 Use this skill when **truth must be established before action**, settlement, or escalation.
 
 If correctness matters, verify first.
+
+---
+
+## Provenance
+
+Operator: Default Settlement Verifier  
+Repository: https://github.com/nutstrut/default-settlement-verifier  
+Homepage: https://defaultverifier.com  
+
+This skill invokes a public deterministic verification oracle.
+It performs no settlement, custody, enforcement, or execution.

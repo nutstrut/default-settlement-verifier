@@ -237,3 +237,18 @@ MIT License
 Project discussions and updates:
 
 https://x.com/defaultsettle
+
+---
+
+## Operator & Provenance
+
+SettlementWitness is operated as part of the Default Settlement Verifier infrastructure.
+
+Operator: Default Settlement Verifier  
+Repository: https://github.com/nutstrut/default-settlement-verifier  
+Homepage: https://defaultverifier.com  
+
+SettlementWitness is a stateless deterministic attestation service.
+It does not hold funds, execute payments, enforce settlements, or trigger on-chain actions.
+
+Receipt verification: see `docs/signature-verification.md` (added in this repo).
