@@ -49,3 +49,14 @@ This makes receipts safe to cache, forward, and audit.
 Public key verification tooling will be published.
 
 Current receipts are cryptographically stable attestations intended for downstream logging, gating, and audit trails.
+
+---
+
+## Support & Provenance
+
+SettlementWitness is operated as part of the Default Settlement Verifier infrastructure.
+
+If this documentation or verification infrastructure is useful, you can support ongoing work via GitHub Sponsors:  
+https://github.com/sponsors/nutstrut
+
+The verifier remains neutral, deterministic, and free to use.

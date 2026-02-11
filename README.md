@@ -252,3 +252,14 @@ SettlementWitness is a stateless deterministic attestation service.
 It does not hold funds, execute payments, enforce settlements, or trigger on-chain actions.
 
 Receipt verification: see `docs/signature-verification.md` (added in this repo).
+
+---
+
+## Support
+
+If Default Settlement Verifier or SettlementWitness saved you time, reduced risk, or helped you ship faster, you can support ongoing infrastructure work.
+
+Support via GitHub Sponsors:  
+https://github.com/sponsors/nutstrut
+
+Infrastructure is operated independently and remains free to use.
