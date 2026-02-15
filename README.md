@@ -4,7 +4,20 @@ Deterministic, neutral verification for agent-to-agent and programmatic settleme
 
 Landing page: https://defaultverifier.com
 
----
+--------------------------------------------------
+
+SAR v0.1 Specification
+
+Spec:
+https://defaultverifier.com/spec/sar-v0.1
+
+Public Keys:
+https://defaultverifier.com/.well-known/sar-keys.json
+
+Fixtures:
+https://defaultverifier.com/spec/sar-v0.1/fixtures/README
+
+--------------------------------------------------
 
 ## Overview
 
