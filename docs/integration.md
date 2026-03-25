@@ -1,4 +1,9 @@
-﻿# SettlementWitness SAR v0.1 — Integration Guide
+> WARNING: This document describes SAR v0.1.
+>
+> For current production usage, including the optional top-level `counterparty` field,
+> see `docs/integration-v0-2.md`.
+
+# SettlementWitness SAR v0.1 - Integration Guide
 
 **Status:** Frozen  
 **Canonical Version:** v0.1  
@@ -8,7 +13,7 @@
 
 ## 1. Overview
 
-SettlementWitness emits cryptographically signed delivery receipts (“SAR v0.1”).
+SettlementWitness emits cryptographically signed delivery receipts ("SAR v0.1").
 
 Each receipt is:
 
@@ -46,7 +51,7 @@ The Ed25519 signature covers the SHA256 digest of the RFC 8785 (JCS) canonicaliz
 {
   "task_id_hash": "string",
   "verdict": "PASS | FAIL | INDETERMINATE",
-  "confidence": 0.0–1.0,
+  "confidence": 0.0-1.0,
   "reason_code": "string",
   "ts": "ISO8601 UTC",
   "verifier_kid": "string"
