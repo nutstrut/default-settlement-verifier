@@ -1,4 +1,4 @@
-# SettlementWitness SAR v0.2 — Integration Notes
+# SettlementWitness SAR v0.2 - Integration Notes
 
 ## Overview
 
@@ -16,7 +16,7 @@ SAR v0.2 introduces an optional top-level field:
 
 ## Purpose
 
-Enables downstream systems to index agent ↔ counterparty relationships.
+Enables downstream systems to index agent <-> counterparty relationships.
 
 ## Signed vs Unsigned
 

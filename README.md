@@ -5,7 +5,7 @@ Verifiable settlement layer for autonomous agents.
 Deterministic. Stateless. x402-compatible.
 
 Supports:
-attestation → payment → settlement → offline verification
+attestation -> payment -> settlement -> offline verification
 
 ---
 
