@@ -1,4 +1,9 @@
-﻿# SettlementWitness SAR v0.1 — Integration Guide
+> ⚠️ This document describes SAR v0.1.
+>
+> For current production usage, including the optional top-level `counterparty` field,
+> see `docs/integration-v0-2.md`.
+
+# SettlementWitness SAR v0.1 — Integration Guide
 
 **Status:** Frozen  
 **Canonical Version:** v0.1  
