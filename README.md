@@ -7,6 +7,12 @@ Deterministic. Stateless. x402-compatible.
 Supports:
 attestation -> payment -> settlement -> offline verification
 
+## Architecture
+
+Understand the SAR stack and verification model:
+
+👉 [SAR Architecture](./ARCHITECTURE.md)
+
 ---
 
 ## Example Response
