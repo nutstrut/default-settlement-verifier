@@ -70,6 +70,12 @@ GET /settlement-witness/receipts?wallet={address}
 
 Returns recent receipts associated with a wallet address.
 
+The public explorer is available at:
+
+https://defaultverifier.com/explorer
+
+This interface allows browsing recent receipts and wallet-indexed delivery history.
+
 ---
 
 ### Public Verification Keys
