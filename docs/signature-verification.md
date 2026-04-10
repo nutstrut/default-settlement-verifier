@@ -20,15 +20,42 @@ Some deployments may include additional metadata such as timestamps or fee-relat
 
 ---
 
+## Signed payload structure
+
+Current SAR receipts include a canonical payload called `receipt_v0_1`.
+
+Fields inside this structure are covered by the Ed25519 signature and
+can be independently verified using the verifier public key.
+
+Typical signed fields include:
+
+- `task_id_hash`
+- `verdict`
+- `confidence`
+- `reason_code`
+- `ts`
+- `verifier_kid`
+- `counterparty` (present for receipts issued under `sar-prod-ed25519-03` and later)
+
+The `counterparty` field binds the wallet address to the receipt inside
+the signature scope.
+
+---
+
 ## Deterministic signing note
 
-Signatures are produced over a deterministic, canonicalized payload derived from:
+Signatures are produced over the canonicalized `receipt_v0_1` payload.
 
-- `task_id`
-- `spec`
-- `output`
+Signature generation follows this process:
 
-Non-deterministic fields (for example, timestamps) are excluded from the signed payload.
+1. Build the deterministic receipt core fields
+2. Canonicalize the payload using RFC 8785 JSON Canonicalization Scheme (JCS)
+3. Compute a SHA256 digest of the canonical payload
+4. Sign the digest using the verifier Ed25519 private key
+
+This ensures receipts are deterministic, replay-stable, and independently verifiable using the public keys published at:
+
+https://defaultverifier.com/.well-known/jwks.json
 
 ---
 
