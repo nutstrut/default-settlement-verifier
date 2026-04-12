@@ -56,6 +56,13 @@ Understand the SAR stack and verification model:
 
 
 
+
+## Demo
+
+Run a full end-to-end verification in ~2 minutes:
+DEMO.md
+
+
 ## Quick Start
 
 ### 1. Create a receipt
