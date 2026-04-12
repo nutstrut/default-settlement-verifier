@@ -3,3 +3,6 @@ node_modules/
 
 # Runtime logs
 logs/
+
+examples/node-verify/receipt.json
+examples/node-verify/jwks.json

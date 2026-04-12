@@ -1,8 +1,6 @@
 # DefaultVerifier — SAR Verification Infrastructure
 
-SAR (Settlement Attestation Receipt) is a verification protocol for AI labor.
-
-It produces cryptographically signed receipts proving whether an AI agent completed a task according to its specification.
+SAR (Settlement Attestation Receipt) is a verification protocol that produces cryptographically signed receipts proving whether an AI agent completed a task according to its specification.
 
 DefaultVerifier is a live SAR verifier implementation with a public receipt registry, metrics API, and explorer.
 
@@ -46,17 +44,58 @@ Understand the SAR stack and verification model:
 
 ## Notes
 
-- receipt_v0_1 is the signed canonical payload
-- as of sar-prod-ed25519-03, counterparty is included inside the signed payload
-- legacy receipts (sar-prod-ed25519-01 and sar-prod-ed25519-02) remain valid but do not include the wallet in signature scope
-- fully backward compatible with SAR v0.1
+- `receipt_v0_1` is the signed canonical receipt payload used by this implementation
+- when `counterparty` is present, it is included in signature scope and in `receipt_id` derivation
+- legacy receipts (`sar-prod-ed25519-01` and `sar-prod-ed25519-02`) remain valid and do not include `counterparty` in signature scope
+- this behavior is implemented and publicly verifiable via the live receipt and key endpoints
+
 ---
+
+
+**SAR Compatibility:** This implementation follows SAR verification semantics, with an extended signed payload when `counterparty` is present.
+
+
+
+## Quick Start
+
+### 1. Create a receipt
+
+curl -X POST https://defaultverifier.com/settlement-witness \
+  -H 'content-type: application/json' \
+  -d '{
+    "task_id":"quickstart-001",
+    "spec":{"goal":"demo"},
+    "output":{"goal":"demo"},
+    "counterparty":"0x1234567890abcdef1234567890abcdef12345678"
+  }'
+
+### 2. Fetch the receipt
+
+curl https://defaultverifier.com/settlement-witness/receipt/<receipt_id>
+
+Note: use the receipt_id inside receipt_v0_1
+
+### 3. Verify locally (Node)
+
+cd examples/node-verify
+node verify.js receipt.json jwks.json
+
+## Examples
+
+Node.js verification example:
+examples/node-verify/
+
+Python verification example:
+examples/verify_receipt_python.py
+
+Usage:
+python3 examples/verify_receipt_python.py <receipt_id>
 
 ## API Endpoints
 
 ### Create Receipt
 
-POST /settlement-witness/attest
+POST /settlement-witness
 
 Submits a task verification request and returns a signed SAR receipt.
 
@@ -65,6 +104,9 @@ Submits a task verification request and returns a signed SAR receipt.
 ### Retrieve Receipt
 
 GET /settlement-witness/receipt/{receipt_id}
+
+Note: Use the `receipt_id` inside `receipt_v0_1` (sha256:...) for retrieval.
+
 
 Returns a previously issued receipt.
 
@@ -87,6 +129,10 @@ This interface allows browsing recent receipts and wallet-indexed delivery histo
 ### Public Verification Keys
 
 https://defaultverifier.com/.well-known/jwks.json
+
+Alternative (SAR protocol reference):
+https://defaultverifier.com/.well-known/sar-keys.json
+
 
 Used to verify Ed25519 signatures for receipts.
 
