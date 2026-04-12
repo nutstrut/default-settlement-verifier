@@ -85,6 +85,11 @@ node verify.js receipt.json jwks.json
 Node.js verification example:
 examples/node-verify/
 
+Python verification example:
+examples/verify_receipt_python.py
+
+Usage:
+python3 examples/verify_receipt_python.py <receipt_id>
 
 ## API Endpoints
 
