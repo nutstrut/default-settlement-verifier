@@ -55,6 +55,31 @@ Understand the SAR stack and verification model:
 **SAR Compatibility:** This implementation follows SAR verification semantics, with an extended signed payload when `counterparty` is present.
 
 
+
+## Quick Start
+
+### 1. Create a receipt
+
+curl -X POST https://defaultverifier.com/settlement-witness \
+  -H 'content-type: application/json' \
+  -d '{
+    "task_id":"quickstart-001",
+    "spec":{"goal":"demo"},
+    "output":{"goal":"demo"},
+    "counterparty":"0x1234567890abcdef1234567890abcdef12345678"
+  }'
+
+### 2. Fetch the receipt
+
+curl https://defaultverifier.com/settlement-witness/receipt/<receipt_id>
+
+Note: use the receipt_id inside receipt_v0_1
+
+### 3. Verify locally (Node)
+
+cd examples/node-verify
+node verify.js receipt.json jwks.json
+
 ## Examples
 
 Node.js verification example:
