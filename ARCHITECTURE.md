@@ -161,7 +161,7 @@ To verify a receipt:
 1. Extract `receipt_v0_1`  
 2. Canonicalize using RFC 8785 (JCS)  
 3. Compute SHA256 digest  
-4. Confirm digest matches `receipt_id`  
+4. Confirm digest matches receipt_v0_1.receipt_id  
 5. Resolve `verifier_kid` to a public key  
 6. Verify Ed25519 signature  
 
