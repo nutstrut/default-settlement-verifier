@@ -1,155 +1,156 @@
-Skill Version: 0.0.4
+---
+name: settlement-witness
+description: >-
+  Verify signed SAR v0.1 settlement receipts locally with Ed25519 and RFC 8785
+  canonicalization. Use when you need to confirm a receipt is cryptographically
+  valid before trusting a task-complete claim, chaining to another agent output,
+  using a receipt as evidence, or acting on a settlement-adjacent claim.
+  Optionally request DefaultVerifier-signed receipts for remote issuance.
+version: 0.1.0
+homepage: https://defaultverifier.com
+metadata:
+  openclaw:
+    emoji: "🧾"
+    requires:
+      bins:
+        - python3
+    install:
+      - kind: uv
+        package: jcs
+      - kind: uv
+        package: cryptography
+---
+
+> **New in 0.1.0:** local-first verification. Receipt cryptography is verified
+> entirely on your machine — no network required. Network is optional and only
+> used when you explicitly request remote receipt issuance or resolution.
 
 # SettlementWitness
 
-Deterministic verification gate for agent execution and x402 settlement.
+Verify SAR v0.1 settlement receipts locally. Optionally request
+DefaultVerifier-signed receipts.
 
-SettlementWitness provides **replay-stable proof-of-delivery receipts** that allow agents, tools, and orchestrators to **safely gate downstream execution** based on whether a claimed outcome actually satisfies predefined conditions.
+## When to use
 
-It does not coordinate, enforce, or hold funds.
-It answers one question only:
+- Before trusting a task-complete claim from another agent
+- Before chaining downstream actions to an agent output
+- Before using a receipt as evidence
+- Before acting on a settlement- or payment-adjacent claim
+- When you prefer a local, offline verifier
 
-> “Given this claim and these conditions — does it verify?”
+## First run (offline, no network needed)
 
+Run the self-test against all bundled fixtures:
 
----
+```bash
+python3 scripts/verify_receipt.py --self-test
+```
 
-## What This Skill Does
+Expected output: `self_test_passed: true` with all four fixtures `[OK]`.
 
-SettlementWitness evaluates a claimed result against a deterministic specification and returns a signed verification receipt.
+## Verify a single receipt
 
-The receipt is:
-- Deterministic (same inputs → => same receipt_id + signature)
-- Replayable
-- Neutral
-- Safe to cache, forward, and audit
+```bash
+python3 scripts/verify_receipt.py fixtures/sar-v0.1-pass.json
+```
 
-This allows agent systems to **halt, continue, or settle** based on objective verification rather than trust or heuristics.
+Returns JSON:
 
----
+```json
+{
+  "valid": true,
+  "receipt_id": "sha256:...",
+  "kid": "sar-prod-ed25519-01",
+  "verdict": "PASS",
+  "errors": []
+}
+```
 
-## Canonical Endpoints
+## Tamper test (should fail)
 
-**MCP Adapter (install this):**  
-https://defaultverifier.com/mcp
+```bash
+python3 scripts/verify_receipt.py fixtures/tampered-receipt.json
+```
 
-**REST Witness Endpoint:**  
-https://defaultverifier.com/settlement-witness
+Returns `valid: false` with errors listing the digest mismatch and signature
+failure. This proves the verifier actually rejects tampered receipts.
 
-**Public MCP Health:**  
-https://defaultverifier.com/mcp-healthz
+## How to interpret results
 
----
+| Field | Meaning |
+|---|---|
+| `valid: true` | Receipt digest and Ed25519 signature both verified |
+| `valid: false` | Receipt failed cryptographic verification |
+| `verdict: PASS` | The signed outcome claims the spec was met |
+| `verdict: FAIL` | The signed outcome claims the spec was not met |
+| `verdict: INDETERMINATE` | The issuer signed an honest uncertainty state |
+| `errors: [...]` | What specifically failed |
 
-## Tool
+`PASS`, `FAIL`, and `INDETERMINATE` are all valid signed outcomes when
+`valid: true` — they represent what the issuer attested, not post-hoc
+interpretation.
 
-### `settlement_witness`
+## What works offline vs what uses the network
 
-Verifies that an output satisfies a deterministic specification and returns a signed receipt.
+**Fully offline (no network):**
+- Parsing a SAR v0.1 receipt JSON
+- Recomputing the canonical digest from signed core fields
+- Verifying `receipt_id` matches the digest
+- Verifying the Ed25519 signature against the bundled public key registry
+- All four bundled fixture checks (`--self-test`)
 
-**Inputs**
-- `task_id` — stable identifier for the task
-- `spec` – deterministic conditions expected to be satisfied
-- `output` – claimed result to be verified
+**Optional network (only when you explicitly ask):**
+- Requesting a new DefaultVerifier-signed receipt — signing keys stay
+  server-side by design, so issuance requires the remote service
+- Resolving a receipt ID
+- Refreshing the public key registry
+- Chain or correlation lookups
 
-**Outputs**
-- `verdict` — `PASS` or `FAIL`
-- `confidence` — numeric confidence score
-- `receipt_id` – deterministic receipt identifier
-- `signature` – cryptographic proof
-- `timestamp` – verification time
+If DefaultVerifier is offline, local verification of existing receipts still
+works. The service being unavailable does not invalidate receipts you already
+have.
 
----
+## Optional remote receipt issuance
 
-## Gating Semantics (Important)
+To request a signed receipt from DefaultVerifier (requires network):
 
-This skill is designed to be used as a **verification gate**.
+```bash
+curl -sS https://defaultverifier.com/settlement-witness \
+  -H "Content-Type: application/json" \
+  -d '{"task_id":"your-task-id","spec":{"expected":"value"},"output":{"expected":"value"}}'
+```
 
-- **PASS** – downstream execution may proceed
-- **FAIL** – execution SHOULD halt or roll back
+The REST endpoint returns a signed SAR v0.1 receipt. You can then verify it
+locally with `scripts/verify_receipt.py`.
 
-SettlementWitness does not retry, repair, or reinterpret results.
-A FAIL is an explicit signal that conditions were **not satisfied**.
+Public key registry: https://defaultverifier.com/.well-known/sar-keys.json  
+Receipt explorer: https://defaultverifier.com/verified
 
+## Safety boundaries
 
----
+DefaultVerifier issues signed evidence about whether a receipt is
+cryptographically valid. It does not:
 
-## Common Use Cases
+- Execute user tasks
+- Approve or reject actions
+- Release, hold, or custody funds
+- Prove legal settlement finality
+- Prove payment finality
+- Control downstream agent behavior
 
-### x402 Payment Gating
-Verify that a task completed correctly **before** releasing or settling payment.
+Acting on a verified receipt is the responsibility of the system or agent
+that reads it.
 
-### Post-Task Verification
-Confirm that an agent actually produced what it claimed before chaining further actions.
+## Environment
 
-### Proof-of-Delivery Receipts
-Generate deterministic receipts that can be replayed, audited, or shared across systems.
+Override the public key registry path if needed:
 
-### Malicious or Broken Skill Mitigation
-Prevent downstream agents from acting on incorrect, partial, or fabricated outputs.
-
-### Agent Orchestration Safety
-Use objective verification instead of trust when coordinating multi-agent workflows.
-
----
-
-## Determinism Guarantee
-
-SettlementWitness is fully deterministic.
-
-Given the same:
-- `task_id`
-- `spec`
-- `output`
-
-It will always return:
-- the same `receipt_id`
-- the same `signature`
-- the same verdict
-
-
-This makes receipts safe for caching, replay, and dispute resolution.
-
-
----
-
-## What This Is Not
-
-- Not a malware scanner
-- Not an LLM judge
-- Not a coordinator or enforcer
-- Not a payment processor
-
-It is neutral verification infrastructure.
-
----
-
-## Identity vs Delivery Proof
-
-SettlementWitness provides **delivery proof**, not identity.
-
-It complements ERC-8004 and identity systems by answering:
-> “Did this outcome satisfy the rules?”
-
-— not:
-> “Who is this agent?”
-
-
----
-
-## When to Use SettlementWitness
-
-Use this skill when **truth must be established before action**, settlement, or escalation.
-
-If correctness matters, verify first.
-
----
+```bash
+SAR_KEYS_REGISTRY_PATH=/path/to/keys.json python3 scripts/verify_receipt.py receipt.json
+```
 
 ## Provenance
 
 Operator: Default Settlement Verifier  
 Repository: https://github.com/nutstrut/default-settlement-verifier  
-Homepage: https://defaultverifier.com  
-
-This skill invokes a public deterministic verification oracle.
-It performs no settlement, custody, enforcement, or execution.
+Homepage: https://defaultverifier.com
