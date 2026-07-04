@@ -55,6 +55,7 @@ _FIXTURE_EXPECTATIONS = [
     ("sar-v0.1-pass.json", True),
     ("sar-v0.1-fail.json", True),
     ("sar-v0.1-indeterminate.json", True),
+    ("sar-v0.1-current-kid03.json", True),
     ("tampered-receipt.json", False),
 ]
 

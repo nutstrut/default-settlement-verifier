@@ -38,7 +38,14 @@ responsibility.
 ## Key pinning and rotation
 
 The bundled `keys/sar-keys.json` is a pinned trust root. It contains the
-public key(s) active at the time this skill package was published.
+public key(s) active at the time this skill package was published. As of
+v0.1.1 it pins the full current SAR production registry: `sar-prod-ed25519-01`,
+`sar-prod-ed25519-02`, and `sar-prod-ed25519-03`.
+
+Local verification requires the receipt's `verifier_kid` to be present in the
+local registry. A receipt signed by a kid that is not bundled will fail offline
+with `verifier_kid not found in registry`, even if the signature is otherwise
+valid.
 
 A future key rotation on the DefaultVerifier side will cause local verification
 to fail for receipts signed by newer keys until the bundled registry is updated
