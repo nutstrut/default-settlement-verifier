@@ -6,7 +6,7 @@ description: >-
   valid before trusting a task-complete claim, chaining to another agent output,
   using a receipt as evidence, or acting on a settlement-adjacent claim.
   Optionally request DefaultVerifier-signed receipts for remote issuance.
-version: 0.1.0
+version: 0.1.2
 homepage: https://defaultverifier.com
 metadata:
   openclaw:
@@ -46,7 +46,7 @@ Run the self-test against all bundled fixtures:
 python3 scripts/verify_receipt.py --self-test
 ```
 
-Expected output: `self_test_passed: true` with all four fixtures `[OK]`.
+Expected output: `self_test_passed: true` with all six fixtures `[OK]`.
 
 ## Verify a single receipt
 
@@ -60,9 +60,14 @@ Returns JSON:
 {
   "valid": true,
   "receipt_id": "sha256:...",
-  "kid": "sar-prod-ed25519-01",
+  "kid": "sar-prod-ed25519-05",
   "verdict": "PASS",
-  "errors": []
+  "errors": [],
+  "signer_lifecycle_status": "active",
+  "trusted_current_production_signer": true,
+  "trusted_historical_signer": true,
+  "registry_snapshot_sha256": "2da5285f...",
+  "offline_verification_note": "Verified offline against the bundled registry snapshot ..."
 }
 ```
 
@@ -85,6 +90,17 @@ failure. This proves the verifier actually rejects tampered receipts.
 | `verdict: FAIL` | The signed outcome claims the spec was not met |
 | `verdict: INDETERMINATE` | The issuer signed an honest uncertainty state |
 | `errors: [...]` | What specifically failed |
+| `signer_lifecycle_status` | The signer's bundled-registry-snapshot lifecycle: `active`, `retired`, `reserved`, `documented_non_operational_duplicate`, `legacy_unclassified`, `wrong_profile`, or `unknown` |
+| `trusted_current_production_signer` | `true` only when the key is the *current* active production signer — a retired key's historical signature can still be `valid: true` with this `false` |
+| `trusted_historical_signer` | `true` when the key is eligible for historical verification (active, retired, or legacy-unclassified) |
+| `registry_snapshot_sha256` | SHA-256 of the bundled registry snapshot this run verified against |
+| `offline_verification_note` | States this was verified against the bundled snapshot only — not a live-registry freshness claim |
+
+**`valid: true` is never the same claim as `trusted_current_production_signer: true`.** A
+retired key's historical receipt is genuinely `valid: true` (the signature is
+real) while `trusted_current_production_signer` stays `false` — retirement
+never erases historical verifiability, and a historical receipt is never
+silently upgraded to a current-production claim.
 
 `PASS`, `FAIL`, and `INDETERMINATE` are all valid signed outcomes when
 `valid: true` — they represent what the issuer attested, not post-hoc

@@ -1,5 +1,42 @@
 # CHANGELOG
 
+## 0.1.2
+
+- **Root cause fixed**: `keys/sar-keys.json` and the `SKILL.md` frontmatter
+  `version` field had drifted out of sync with the actual bundled key set and
+  with each other (`SKILL.md` still said `0.1.0` while `CHANGELOG.md` already
+  documented a `0.1.1` bundling change). This release reconciles both.
+- Refreshed `keys/sar-keys.json` to the full, current 8-entry canonical SAR
+  registry (was stale at 3 entries: `-01`/`-02`/`-03` only, no lifecycle
+  data). Bundled snapshot is byte-identical to the canonical registry
+  (sha256 `2da5285f458af9f3369e5baddd953164834d961161c87c9594b823ce251a4f6b`,
+  confirmed 2026-07-19).
+  See `sar-prod-ed25519-05` — the current active production signer — did not
+  verify locally before this release; it now does.
+- Added `scripts/registry_snapshot.py`: lifecycle-aware registry loading and
+  classification (current-active / historical-retired / documented-non-
+  operational-duplicate / reserved / legacy-unclassified / unknown /
+  wrong-profile), scoped to the `sar_settlement_witness_signing` profile.
+  Pins and enforces the bundled snapshot's SHA-256 (fails closed on mismatch)
+  unless `SAR_KEYS_REGISTRY_PATH` is explicitly overridden.
+- `verify_receipt.py` output now reports `signer_lifecycle_status`,
+  `trusted_current_production_signer`, `trusted_historical_signer`,
+  `registry_snapshot_sha256`, and `offline_verification_note` alongside the
+  existing `valid`/`receipt_id`/`kid`/`verdict`/`errors` fields.
+  `valid: true` is never conflated with `trusted_current_production_signer:
+  true` — a retired key's historical receipt still verifies, but is never
+  represented as a current-production-signer claim.
+  `sar-prod-ed25519-02` (documented non-operational duplicate of `-03`'s
+  public-key bytes) is never reported as an independently active signer.
+- Added `fixtures/sar-v0.1-current-kid05.json` (a real, current, `-05`-signed
+  production receipt) and `tests/test_registry_lifecycle.py` (duplicate-key,
+  reserved-key, unknown-key, wrong-profile-key, snapshot-hash-pinning, and
+  zero-egress coverage). `scripts/verify_receipt.py --self-test` now checks
+  six fixtures, not four.
+- Does not change signing behavior (this skill never signs), does not add a
+  hosted dependency, does not weaken fail-closed verification, and does not
+  add scoring/reputation behavior.
+
 ## 0.1.1
 
 - Bundled the full current SAR public key registry (`sar-prod-ed25519-01`,

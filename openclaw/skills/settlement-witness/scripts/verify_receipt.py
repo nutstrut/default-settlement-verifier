@@ -41,6 +41,8 @@ from typing import Any, Dict, List, Optional, Tuple
 import jcs
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
 
+import registry_snapshot as _registry_snapshot
+
 # Signed-core field set for SAR v0.1. Mirrors _sar_core_without_sig in
 # settlement_witness_v0.py. Only these fields are canonicalized and signed;
 # everything else in a receipt (sar_version, notes, attribution, etc.) is
@@ -56,6 +58,7 @@ _FIXTURE_EXPECTATIONS = [
     ("sar-v0.1-fail.json", True),
     ("sar-v0.1-indeterminate.json", True),
     ("sar-v0.1-current-kid03.json", True),
+    ("sar-v0.1-current-kid05.json", True),
     ("tampered-receipt.json", False),
 ]
 
@@ -67,26 +70,49 @@ def _b64url_decode_flexible(s: str) -> bytes:
     return base64.urlsafe_b64decode((s + ("=" * pad)).encode("utf-8"))
 
 
-def _load_registry_keys(keys_path: str) -> dict:
-    with open(keys_path, "r", encoding="utf-8") as f:
-        return json.load(f)
+def _load_snapshot(keys_path: str) -> "_registry_snapshot.RegistrySnapshot":
+    """Load the lifecycle-aware registry snapshot for ``keys_path``.
+
+    When ``keys_path`` is the bundled default, the pinned SHA-256 is
+    enforced (fail closed on mismatch). A caller-supplied override path
+    (``SAR_KEYS_REGISTRY_PATH`` / explicit argument) is loaded as-is, since
+    it is intentionally not expected to match the bundled snapshot's hash.
+    """
+    if os.path.abspath(keys_path) == os.path.abspath(_DEFAULT_KEYS_PATH):
+        snap = _registry_snapshot.RegistrySnapshot(keys_path)
+        snap.verify_pinned_hash()
+        return snap
+    return _registry_snapshot.RegistrySnapshot(keys_path)
 
 
-def _get_public_key_for_kid(verifier_kid: str, keys_path: str) -> Ed25519PublicKey:
-    """Ported from _sar_get_public_key_for_kid (registry lookup, verify-only)."""
-    reg = _load_registry_keys(keys_path)
-    for k in reg.get("keys", []):
-        if k.get("kid") == verifier_kid:
-            x = k.get("x")
-            if not isinstance(x, str) or not x.strip():
-                raise RuntimeError("registry key missing 'x' public key bytes")
-            pub_bytes = _b64url_decode_flexible(x.strip())
-            if len(pub_bytes) != 32:
-                raise RuntimeError(
-                    f"invalid Ed25519 public key length: {len(pub_bytes)} bytes (expected 32)"
-                )
-            return Ed25519PublicKey.from_public_bytes(pub_bytes)
-    raise RuntimeError(f"verifier_kid not found in registry: {verifier_kid}")
+def _get_public_key_for_kid(
+    verifier_kid: str, keys_path: str
+) -> tuple[Ed25519PublicKey, "_registry_snapshot.KeyClassification", "_registry_snapshot.RegistrySnapshot"]:
+    """Resolve the trusted public key and lifecycle classification for a kid.
+
+    Only keys registered for the SAR settlement-witness signing profile are
+    accepted here (``registry_snapshot.SAR_SETTLEMENT_WITNESS_USE``, or the
+    three legacy pre-``use``-field kids) — a key from a different profile
+    (e.g. SAR-402 recording attribution) is never trusted for a SAR v0.1
+    settlement-witness receipt regardless of its own lifecycle status.
+    """
+    snapshot = _load_snapshot(keys_path)
+    classification = snapshot.classify(verifier_kid)
+    if not classification.present:
+        raise RuntimeError(f"verifier_kid not found in registry: {verifier_kid}")
+    if not classification.profile_ok:
+        raise RuntimeError(
+            f"verifier_kid {verifier_kid} is registered for a different signing "
+            f"profile ({classification.use!r}), not sar_settlement_witness_signing"
+        )
+    pub_bytes = snapshot.get_public_key_bytes(verifier_kid)
+    if pub_bytes is None:
+        raise RuntimeError("registry key missing usable public key bytes")
+    if len(pub_bytes) != 32:
+        raise RuntimeError(
+            f"invalid Ed25519 public key length: {len(pub_bytes)} bytes (expected 32)"
+        )
+    return Ed25519PublicKey.from_public_bytes(pub_bytes), classification, snapshot
 
 
 def _core_without_sig(receipt: Dict[str, Any]) -> dict:
@@ -133,6 +159,13 @@ def verify_receipt(receipt: Dict[str, Any], keys_path: str = _DEFAULT_KEYS_PATH)
     rid = receipt.get("receipt_id") if isinstance(receipt, dict) else None
     kid = receipt.get("verifier_kid") if isinstance(receipt, dict) else None
     verdict = receipt.get("verdict") if isinstance(receipt, dict) else None
+    lifecycle: Dict[str, Any] = {
+        "signer_lifecycle_status": None,
+        "trusted_current_production_signer": False,
+        "trusted_historical_signer": False,
+        "registry_snapshot_sha256": None,
+        "offline_verification_note": None,
+    }
 
     def result() -> Dict[str, Any]:
         return {
@@ -141,6 +174,7 @@ def verify_receipt(receipt: Dict[str, Any], keys_path: str = _DEFAULT_KEYS_PATH)
             "kid": kid,
             "verdict": verdict,
             "errors": errors,
+            **lifecycle,
         }
 
     if not isinstance(receipt, dict):
@@ -177,7 +211,18 @@ def verify_receipt(receipt: Dict[str, Any], keys_path: str = _DEFAULT_KEYS_PATH)
     # Ed25519 signature over the digest bytes.
     try:
         sig_bytes = _b64url_decode_flexible(sig.split(":", 1)[1])
-        pub = _get_public_key_for_kid(kid.strip(), keys_path)
+        pub, classification, snapshot = _get_public_key_for_kid(kid.strip(), keys_path)
+        lifecycle["signer_lifecycle_status"] = classification.lifecycle_label
+        lifecycle["trusted_current_production_signer"] = classification.is_current_production_signer
+        lifecycle["trusted_historical_signer"] = classification.is_historically_verifiable
+        lifecycle["registry_snapshot_sha256"] = snapshot.raw_sha256
+        lifecycle["offline_verification_note"] = (
+            "Verified offline against the bundled registry snapshot "
+            f"(sha256:{snapshot.raw_sha256}, source {_registry_snapshot.SNAPSHOT_SOURCE}, "
+            f"dated {_registry_snapshot.SNAPSHOT_DATE}). This confirms the receipt "
+            "against that pinned snapshot only; it does not confirm the live "
+            "registry's current freshness."
+        )
         pub.verify(sig_bytes, digest)
     except Exception as e:
         errors.append(f"signature verification failed: {e}")
