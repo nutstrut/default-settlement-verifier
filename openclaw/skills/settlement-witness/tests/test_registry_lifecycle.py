@@ -33,7 +33,7 @@ def _load(name: str) -> dict:
 def test_bundled_snapshot_hash_matches_canonical_registry():
     assert (
         rs.snapshot_sha256()
-        == "2da5285f458af9f3369e5baddd953164834d961161c87c9594b823ce251a4f6b"
+        == "e79c6e714529933c277df6bcfe8e347cb22304b827019cf678667bab18facdb8"
     )
 
 
