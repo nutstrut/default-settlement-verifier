@@ -1,6 +1,6 @@
 # Node.js SAR Verifier Example
 
-This example verifies a `receipt_v0_1` object against the public verifier key set.
+This example verifies a `settlement-witness-verified-v0.2` receipt payload against the public verifier key set.
 
 ## Install
 
@@ -12,7 +12,7 @@ node verify.js receipt.json jwks.json
 
 ## Inputs
 
-- receipt.json — the `receipt_v0_1` object
+- receipt.json — the receipt payload
 - jwks.json — verifier public keys from:
 
 https://defaultverifier.com/.well-known/jwks.json

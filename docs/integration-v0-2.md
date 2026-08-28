@@ -1,5 +1,9 @@
 # SettlementWitness SAR v0.2 - Integration Notes
 
+**Status:** Current. Receipts are issued under the `settlement-witness-verified-v0.2`
+profile with verdicts `PASS` / `FAIL` / `INDETERMINATE`. The request shape is
+`{"checks": [...]}`, not the legacy `{"spec":{"goal":"..."}}` shape.
+
 ## Overview
 
 SAR v0.2 introduces wallet binding via the `counterparty` field.
@@ -10,7 +14,7 @@ This allows verifiers to cryptographically prove that a specific wallet particip
 
 ## Key Properties
 
-- Included inside `receipt_v0_1` for receipts issued under `sar-prod-ed25519-03`
+- Included inside the signed receipt payload for receipts issued from `sar-prod-ed25519-03` onward
 - Included in canonicalization
 - Covered by the Ed25519 signature
 - Fully backward compatible with earlier receipts
@@ -22,28 +26,36 @@ Enables downstream systems to verify and index wallet <-> settlement relationshi
 ## Signed vs Unsigned
 
 ### Signed (deterministic)
-- `receipt_v0_1`
-- `counterparty` (for `sar-prod-ed25519-03` and later)
+- the `settlement-witness-verified-v0.2` receipt payload
+- `counterparty` (for receipts issued from `sar-prod-ed25519-03` onward)
 
 ### Unsigned (contextual)
 - `_ext`
 
 ## Compatibility
 
-All SAR v0.1 and earlier receipts remain valid without modification.
+All earlier receipts remain valid without modification; retired signer keys
+remain usable to verify the historical receipts they signed. A receipt's
+`verifier_kid` is historical evidence and is never rewritten.
 
 Receipts issued under `sar-prod-ed25519-01` and `sar-prod-ed25519-02` do not include the wallet in signature scope.
 
-Receipts issued under `sar-prod-ed25519-03` and later include `counterparty` inside the signed payload.
+Receipts issued from `sar-prod-ed25519-03` onward include `counterparty` inside the signed payload.
+
+Current signer lifecycle (which `kid` is active vs. retired) is published at
+`https://defaultverifier.com/.well-known/sar-keys.json`.
 
 ## Example
 
 {
-  "receipt_v0_1": {
+  "task_id": "example",
+  "verdict": "PASS",
+  "reason_code": "CONDITION_SATISFIED",
+  "receipt": {
+    "profile": "settlement-witness-verified-v0.2",
     "task_id_hash": "sha256:...",
     "verdict": "PASS",
-    "confidence": 1.0,
-    "reason_code": "SPEC_MATCH",
+    "reason_code": "CONDITION_SATISFIED",
     "ts": "2026-01-01T00:00:00Z",
     "verifier_kid": "sar-prod-ed25519-03",
     "counterparty": "0xABC...",

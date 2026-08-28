@@ -23,11 +23,11 @@ Understand the SAR stack and verification model:
   "verifier_endpoint": "https://defaultverifier.com/verify",
   "witness_timestamp": "2026-01-01T00:00:00Z",
   "receipt_id": "...",
-  "receipt_v0_1": {
+  "receipt": {
+    "profile": "settlement-witness-verified-v0.2",
     "task_id_hash": "sha256:...",
     "verdict": "PASS",
-    "confidence": 1.0,
-    "reason_code": "SPEC_MATCH",
+    "reason_code": "CONDITION_SATISFIED",
     "ts": "...",
     "verifier_kid": "...",
     "counterparty": "0xABC...",
@@ -44,9 +44,10 @@ Understand the SAR stack and verification model:
 
 ## Notes
 
-- `receipt_v0_1` is the signed canonical receipt payload used by this implementation
+- the receipt payload is issued under the `settlement-witness-verified-v0.2` profile; verdicts are `PASS`, `FAIL`, or `INDETERMINATE`
 - when `counterparty` is present, it is included in signature scope and in `receipt_id` derivation
-- legacy receipts (`sar-prod-ed25519-01` and `sar-prod-ed25519-02`) remain valid and do not include `counterparty` in signature scope
+- retired signer keys remain valid for verifying receipts they historically signed; `verifier_kid` in a receipt is historical evidence and is never rewritten
+- current signer lifecycle (which `kid` is active vs. retired) is published at `https://defaultverifier.com/.well-known/sar-keys.json` — treat that endpoint, not this README, as the source of truth for which key is currently active
 - this behavior is implemented and publicly verifiable via the live receipt and key endpoints
 
 ---
@@ -71,8 +72,8 @@ curl -X POST https://defaultverifier.com/settlement-witness \
   -H 'content-type: application/json' \
   -d '{
     "task_id":"quickstart-001",
-    "spec":{"goal":"demo"},
-    "output":{"goal":"demo"},
+    "spec":{"checks":[{"kind":"field_equals","inputs":{"output_path":"$.result"},"expected":"hello"}]},
+    "output":{"result":"hello"},
     "counterparty":"0x1234567890abcdef1234567890abcdef12345678"
   }'
 
@@ -80,7 +81,7 @@ curl -X POST https://defaultverifier.com/settlement-witness \
 
 curl https://defaultverifier.com/settlement-witness/receipt/<receipt_id>
 
-Note: use the receipt_id inside receipt_v0_1
+Note: use the `receipt_id` from the returned receipt
 
 ### 3. Verify locally (Node)
 
@@ -112,7 +113,7 @@ Submits a task verification request and returns a signed SAR receipt.
 
 GET /settlement-witness/receipt/{receipt_id}
 
-Note: Use the `receipt_id` inside `receipt_v0_1` (sha256:...) for retrieval.
+Note: Use the `receipt_id` from the returned receipt (sha256:...) for retrieval.
 
 
 Returns a previously issued receipt.

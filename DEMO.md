@@ -8,8 +8,8 @@ curl -X POST https://defaultverifier.com/settlement-witness \
   -H 'content-type: application/json' \
   -d '{
     "task_id":"demo-001",
-    "spec":{"goal":"demo"},
-    "output":{"goal":"demo"},
+    "spec":{"checks":[{"kind":"field_equals","inputs":{"output_path":"$.result"},"expected":"hello"}]},
+    "output":{"result":"hello"},
     "counterparty":"0x1234567890abcdef1234567890abcdef12345678"
   }'
 

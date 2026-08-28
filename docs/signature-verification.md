@@ -11,10 +11,11 @@ SettlementWitness provides attestations only. It does not execute payments, hold
 A SettlementWitness receipt contains (at minimum):
 
 - `task_id`
-- `verdict` (`PASS` / `FAIL`)
-- `confidence`
+- `verdict` (`PASS` / `FAIL` / `INDETERMINATE`)
 - `signature` (verifier signature over a deterministic payload)
 - `receipt_id` (stable identifier derived from the same payload)
+
+Receipts are issued under the `settlement-witness-verified-v0.2` profile.
 
 Some deployments may include additional metadata such as timestamps or fee-related fields.
 
@@ -22,7 +23,8 @@ Some deployments may include additional metadata such as timestamps or fee-relat
 
 ## Signed payload structure
 
-Current SAR receipts include a canonical payload called `receipt_v0_1`.
+Current SAR receipts include a canonical signed payload issued under the
+`settlement-witness-verified-v0.2` profile.
 
 Fields inside this structure are covered by the Ed25519 signature and
 can be independently verified using the verifier public key.
@@ -30,12 +32,11 @@ can be independently verified using the verifier public key.
 Typical signed fields include:
 
 - `task_id_hash`
-- `verdict`
-- `confidence`
+- `verdict` (`PASS` / `FAIL` / `INDETERMINATE`)
 - `reason_code`
 - `ts`
 - `verifier_kid`
-- `counterparty` (present for receipts issued under `sar-prod-ed25519-03` and later)
+- `counterparty` (present for receipts issued from `sar-prod-ed25519-03` onward)
 
 The `counterparty` field binds the wallet address to the receipt inside
 the signature scope.
@@ -44,7 +45,7 @@ the signature scope.
 
 ## Deterministic signing note
 
-Signatures are produced over the canonicalized `receipt_v0_1` payload.
+Signatures are produced over the canonicalized receipt payload.
 
 Signature generation follows this process:
 
