@@ -6,3 +6,6 @@ logs/
 
 examples/node-verify/receipt.json
 examples/node-verify/jwks.json
+
+__pycache__/
+*.pyc
