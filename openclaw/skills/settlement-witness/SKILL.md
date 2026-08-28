@@ -6,7 +6,7 @@ description: >-
   valid before trusting a task-complete claim, chaining to another agent output,
   using a receipt as evidence, or acting on a settlement-adjacent claim.
   Optionally request DefaultVerifier-signed receipts for remote issuance.
-version: 0.1.2
+version: 0.1.3
 homepage: https://defaultverifier.com
 metadata:
   openclaw:
@@ -141,6 +141,19 @@ locally with `scripts/verify_receipt.py`.
 
 Public key registry: https://defaultverifier.com/.well-known/sar-keys.json  
 Receipt explorer: https://defaultverifier.com/verified
+
+## Known limitation: `settlement-witness-verified-v0.2` receipts
+
+This skill's local verifier parses the legacy flat SAR v0.1 receipt schema
+only. Current production issuance uses the `settlement-witness-verified-v0.2`
+receipt profile, which has a different shape (`verification_basis`,
+`properties`, `receipt_profile` fields; no `confidence` field). **v0.2
+receipts cannot be offline-verified by this skill version.** The bundled key
+registry (`keys/sar-keys.json`) is kept current with the production signer
+set — including the current active signer, published at
+https://defaultverifier.com/.well-known/sar-keys.json — regardless of this
+gap, so that key-lookup stays accurate even where receipt-shape parsing does
+not yet cover v0.2.
 
 ## Safety boundaries
 

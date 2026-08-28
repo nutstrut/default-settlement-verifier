@@ -1,5 +1,42 @@
 # CHANGELOG
 
+## 0.1.3
+
+- Refreshed `keys/sar-keys.json` to add `sar-prod-ed25519-06` (9 entries, was
+  8), copied verbatim from the production runtime registry
+  `/home/ubuntu/settlement-witness/sar-keys.json` (hash-pinned at
+  `SAR_KEYS_REGISTRY_SHA256=4826afdb...` in the live `settlement-witness.service`
+  environment, independently confirmed 2026-08-28). `sar-prod-ed25519-06` is
+  the production signer for all settlement-witness receipts issued since its
+  2026-08-26 activation (OPMA `fdfe453c`, first-receipt-ceremony retry);
+  `sar-prod-ed25519-05` remains `status: active` (not retired) in the same
+  registry, so both keys are simultaneously valid current production signers
+  -- this release does not demote `-05`.
+- Updated `scripts/registry_snapshot.py`'s `SNAPSHOT_SHA256` /
+  `SNAPSHOT_DATE` pin to the refreshed 9-entry bundle
+  (`e79c6e714529933c277df6bcfe8e347cb22304b827019cf678667bab18facdb8`,
+  2026-08-28).
+- **Known limitation, not fixed in this release**: `sar-prod-ed25519-06` is
+  bound exclusively to the `settlement-witness-verified-v0.2` receipt profile
+  (per its registry entry's `profiles` field), and live production issuance
+  under that profile uses a materially different receipt shape (nested
+  `verification_basis`/`properties` objects, `receipt_profile`,
+  `reason_code` values like `CONDITION_SATISFIED`, no `confidence` field)
+  than the flat SAR v0.1 schema (`sar_version`, `task_id_hash`, `confidence`,
+  `reason_code: SPEC_MATCH`) this skill's `verify_receipt.py` parses.
+  **This skill version cannot offline-verify `settlement-witness-verified-v0.2`
+  receipts** -- only legacy SAR v0.1-shaped ones. No `-06`-signed fixture is
+  bundled here because a real one would be v0.2-shaped and would not exercise
+  (or would simply fail to parse under) the current v0.1-only verifier logic;
+  fabricating a v0.1-shaped `-06` fixture would misrepresent what `-06`
+  actually signs. Parsing/verifying the v0.2 profile is out of scope for this
+  release and is left as a tracked follow-up.
+- Also stale but not corrected in this release: the bundled `-04` entry still
+  reads `status: reserved`; the production registry now reads
+  `status: withdrawn-before-activation` (2026-07-28). Left untouched to keep
+  this release scoped to the `-06` current-signer correction; flagged here so
+  it isn't silently missed.
+
 ## 0.1.2
 
 - **Root cause fixed**: `keys/sar-keys.json` and the `SKILL.md` frontmatter

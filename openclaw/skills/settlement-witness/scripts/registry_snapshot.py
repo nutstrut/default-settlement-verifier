@@ -58,10 +58,19 @@ DEFAULT_SNAPSHOT_PATH = os.path.join(_SKILL_ROOT, "keys", "sar-keys.json")
 # /home/ubuntu/settlement-witness/sar-keys.json, /var/www/html/.well-known/
 # sar-keys.json, and https://defaultverifier.com/.well-known/sar-keys.json
 # on 2026-07-19.
+#
+# Refreshed 2026-08-28: added sar-prod-ed25519-06 (activated 2026-08-26 under
+# OPMA fdfe453c, first-receipt ceremony retry), copied verbatim from the
+# production runtime registry /home/ubuntu/settlement-witness/sar-keys.json
+# (sha256 4826afdb489b88487c50854471f70ddb30767a73631e4c5d2a6086cf4cdbc8e4 at
+# time of copy). The public .well-known/sar-keys.json projection was found
+# stale (missing -06) at the same time and is a separate, tracked defect --
+# this bundle was refreshed from the runtime source of truth, not from the
+# stale public endpoint.
 SNAPSHOT_SOURCE = "https://defaultverifier.com/.well-known/sar-keys.json"
-SNAPSHOT_DATE = "2026-07-19"
+SNAPSHOT_DATE = "2026-08-28"
 SNAPSHOT_SHA256 = (
-    "2da5285f458af9f3369e5baddd953164834d961161c87c9594b823ce251a4f6b"
+    "e79c6e714529933c277df6bcfe8e347cb22304b827019cf678667bab18facdb8"
 )
 
 # The only ``use`` value this verifier trusts for SAR v0.1 settlement-witness

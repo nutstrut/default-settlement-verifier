@@ -84,6 +84,22 @@
       "not_before": "2026-07-09T00:00:00Z",
       "note": "Loader-compatible (PKCS8 PEM via SAR_ED25519_PRIVATE_KEY_FILE) replacement for the unusable sar-prod-ed25519-04 custody artifact. Generation/custody complete per commit d9f580a with real-loader round-trip verification. Activated 2026-07-12T03:38:49Z (status: active). activation_evidence=reports/registry/transitions/sar-prod-ed25519-05-reserved-to-active-20260712.json;pre_registry_sha256=ed6127c9b96fbb5735591bde8099d1306c2fc5c09a184218981f9fbe5880c55b (this field names the pre-transition registry-file digest only, not the activation-artifact's own digest -- see the cited artifact for its independent hash). sar-prod-ed25519-04 remains reserved/unusable; sar-prod-ed25519-03 remains unretired pending separate approval.",
       "x": "7vTEtEbGFdoExgfjWpQAiHRRJVQoIHLAY4XXvy1xMGc"
+    },
+    {
+      "kid": "sar-prod-ed25519-06",
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "alg": "Ed25519",
+      "x": "EUthirdMcx6vuBkwqe_5BbPgES6JaKXso18j8ZlJwJg",
+      "public_key_hex": "114b618ab74c731eafb81930a9eff905b3e0112e8968a5eca35f23f19949c098",
+      "use": "sar_settlement_witness_signing",
+      "purpose": "Signs settlement-witness SAR receipts only; not delivery, payment, access, release, or finality.",
+      "status": "active",
+      "not_before": "2026-08-26T22:24:44Z",
+      "profiles": [
+        "settlement-witness-verified-v0.2"
+      ],
+      "note": "Generated under OPMA ddde2065-486a-4cc7-8064-53f1a61f7bba, canonical -05 generation/custody procedure (on-host Ed25519PrivateKey.generate(), PKCS8 PEM, real-loader round-trip verified pre- and post-encryption). Not active until a separate, later governed activation approval changes status to active and a separate first-receipt-ceremony OPMA changes SAR_KID. Bound exclusively to settlement-witness-verified-v0.2 via the 'profiles' field consumed by sw_repair_wiring.build_key_policy() / artifact_verifier.verify_signed_receipt().  ACTIVATED under OPMA fdfe453c-f025-4c9f-b24c-4b693875d2d3 (first-receipt ceremony retry)."
     }
   ]
 }
