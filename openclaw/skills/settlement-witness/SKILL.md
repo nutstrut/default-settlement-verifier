@@ -6,7 +6,7 @@ description: >-
   valid before trusting a task-complete claim, chaining to another agent output,
   using a receipt as evidence, or acting on a settlement-adjacent claim.
   Optionally request DefaultVerifier-signed receipts for remote issuance.
-version: 0.1.2
+version: 0.1.4
 homepage: https://defaultverifier.com
 metadata:
   openclaw:
@@ -128,16 +128,43 @@ have.
 
 ## Optional remote receipt issuance
 
-To request a signed receipt from DefaultVerifier (requires network):
+To request a signed receipt from DefaultVerifier (requires network) you need
+an enrolled caller credential first — the endpoint does not accept anonymous
+requests. Enrollment issues a `caller_id` and a bearer key. Every attest
+request must carry:
+
+| Header | Value |
+|---|---|
+| `Authorization` | `Bearer <your issued key>` |
+| `X-Settlement-Timestamp` | Unix seconds; must be within 120s of server time |
+| `X-Settlement-Nonce` | Unique per request; a repeat is rejected `409` |
+
+Missing or unknown credentials return `401 {"result": "UNAUTHORIZED"}`. A
+repeated nonce returns `409 {"result": "REPLAY_REJECTED"}`.
+
+The spec shape is `ds.evaluation.deterministic_acceptance_spec.v0.1`: a
+`checks` array, not the retired `{"expected": ...}` form.
 
 ```bash
-curl -sS https://defaultverifier.com/settlement-witness \
+curl -sS https://defaultverifier.com/settlement-witness/attest \
   -H "Content-Type: application/json" \
-  -d '{"task_id":"your-task-id","spec":{"expected":"value"},"output":{"expected":"value"}}'
+  -H "Authorization: Bearer $SETTLEMENT_ATTEST_API_KEY" \
+  -H "X-Settlement-Timestamp: $(date +%s)" \
+  -H "X-Settlement-Nonce: $(uuidgen)" \
+  -d '{"task_id":"your-task-id",
+       "agent_id":"your-caller-id",
+       "spec":{"checks":[{"kind":"field_equals","inputs":{"output_path":"$.status"},"expected":"ok"}]},
+       "output":{"status":"ok"}}'
 ```
 
-The REST endpoint returns a signed SAR v0.1 receipt. You can then verify it
-locally with `scripts/verify_receipt.py`.
+The endpoint returns a signed `settlement-witness-verified-v0.2` receipt. You
+can then verify it locally with `scripts/verify_receipt.py`.
+
+A caller previously migrated from a retired pre-auth integration may be
+eligible for narrow legacy compatibility normalization — this requires
+explicit enrollment and is not the default public contract. Ask about
+legacy-shape enrollment during caller enrollment rather than retrying an old
+integration unauthenticated.
 
 Public key registry: https://defaultverifier.com/.well-known/sar-keys.json  
 Receipt explorer: https://defaultverifier.com/verified

@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 0.1.4
+
+- Packaging-only release, no content change from 0.1.3. 0.1.2's publish
+  accidentally bundled a stray `scripts/__pycache__/*.pyc`; the immediate
+  0.1.3 republish fixed that but left `SKILL.md`'s own frontmatter
+  `version:` field at `0.1.2`, so the published CLI version tag (`0.1.3`)
+  and the file's self-reported version drifted apart. 0.1.4 reconciles
+  them — the same class of version/frontmatter drift this skill's own
+  0.1.2 entry (below) already fixed once for the key registry.
+
 ## 0.1.2
 
 - **Root cause fixed**: `keys/sar-keys.json` and the `SKILL.md` frontmatter
@@ -36,6 +46,15 @@
 - Does not change signing behavior (this skill never signs), does not add a
   hosted dependency, does not weaken fail-closed verification, and does not
   add scoring/reputation behavior.
+- **Corrected the "Optional remote receipt issuance" section**, which was
+  stale against the production attest contract as of the 2026-08-26 D31
+  auth hardening: wrong route (`/settlement-witness` instead of
+  `/settlement-witness/attest`), no auth headers (every copy/paste example
+  now 401s), and the retired `{"expected": ...}` spec shape instead of
+  `ds.evaluation.deterministic_acceptance_spec.v0.1`. Also corrected the
+  issued-receipt profile name to `settlement-witness-verified-v0.2` (was
+  described as "SAR v0.1"). Local verification behavior is unchanged — this
+  section only documents the optional remote-issuance request/response.
 
 ## 0.1.1
 
