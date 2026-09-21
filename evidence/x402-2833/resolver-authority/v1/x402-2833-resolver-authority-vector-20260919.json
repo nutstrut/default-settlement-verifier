@@ -1,0 +1,88 @@
+{
+  "schema": "morpheus/x402-resolver-authority-conformance-v1",
+  "fixture_id": "x402-2833-resolver-authority-20260919",
+  "synthetic": true,
+  "scope": "local fixture and deterministic evaluator only; not an x402 protocol rule",
+  "canonicalization": {
+    "method": "json.dumps(sort_keys=True, separators=(',', ':'))",
+    "digest": "sha256(canonical authority configuration bytes)",
+    "meaning": "commits to authority configuration; does not prove authority validity or real-world timing"
+  },
+  "shared_inputs": {
+    "evidence": {
+      "evidence_id": "E-2833-same-evidence",
+      "evidence_hash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "valid": true
+    },
+    "lifecycle": {
+      "lifecycle_id": "L-2833-same-lifecycle",
+      "bound": true
+    }
+  },
+  "resolutions": {
+    "resolver_A": {
+      "resolver_id": "resolver-A",
+      "check_set_id": "check-set-A",
+      "internally_valid": true,
+      "successor_state": "state-A"
+    },
+    "resolver_B": {
+      "resolver_id": "resolver-B",
+      "check_set_id": "check-set-B",
+      "internally_valid": true,
+      "successor_state": "state-B"
+    }
+  },
+  "cases": [
+    {
+      "id": "case-1-only-A-authorized",
+      "authority_commitment": {
+        "policy_version": "resolver-policy-v1",
+        "committed_before_evidence": true,
+        "authorized_resolutions": [
+          {"resolver_id": "resolver-A", "check_set_id": "check-set-A", "permitted_successor_state": "state-A"}
+        ],
+        "conflict_rule": null
+      },
+      "expected": {
+        "resolver_A": {"resolution_valid": true, "resolver_authorized": true, "transition_allowed": true, "reason": "AUTHORIZED_RESOLUTION"},
+        "resolver_B": {"resolution_valid": true, "resolver_authorized": false, "transition_allowed": false, "reason": "RESOLVER_NOT_PREAUTHORIZED"}
+      }
+    },
+    {
+      "id": "case-2-both-authorized-prefer-A",
+      "authority_commitment": {
+        "policy_version": "resolver-policy-v1",
+        "committed_before_evidence": true,
+        "authorized_resolutions": [
+          {"resolver_id": "resolver-A", "check_set_id": "check-set-A", "permitted_successor_state": "state-A"},
+          {"resolver_id": "resolver-B", "check_set_id": "check-set-B", "permitted_successor_state": "state-B"}
+        ],
+        "conflict_rule": "prefer_A"
+      },
+      "expected": {
+        "resolver_A": {"resolution_valid": true, "resolver_authorized": true, "transition_allowed": true, "reason": "PRECOMMITTED_CONFLICT_RULE"},
+        "resolver_B": {"resolution_valid": true, "resolver_authorized": true, "transition_allowed": false, "reason": "PRECOMMITTED_CONFLICT_RULE"},
+        "operative_successor_state": "state-A"
+      }
+    },
+    {
+      "id": "case-3-both-authorized-no-conflict-rule",
+      "authority_commitment": {
+        "policy_version": "resolver-policy-v1",
+        "committed_before_evidence": true,
+        "authorized_resolutions": [
+          {"resolver_id": "resolver-A", "check_set_id": "check-set-A", "permitted_successor_state": "state-A"},
+          {"resolver_id": "resolver-B", "check_set_id": "check-set-B", "permitted_successor_state": "state-B"}
+        ],
+        "conflict_rule": null
+      },
+      "expected": {
+        "resolver_A": {"resolution_valid": true, "resolver_authorized": true, "transition_allowed": false, "reason": "CONFLICT_RULE_MISSING"},
+        "resolver_B": {"resolution_valid": true, "resolver_authorized": true, "transition_allowed": false, "reason": "CONFLICT_RULE_MISSING"},
+        "operative_successor_state": null,
+        "classification": "BLOCKED_INDETERMINATE"
+      }
+    }
+  ]
+}

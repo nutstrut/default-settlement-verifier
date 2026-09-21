@@ -1,0 +1,74 @@
+{
+  "schema": "morpheus/x402-resolver-authority-conformance-v2",
+  "fixture_id": "x402-2833-resolver-authority-v2-20260921",
+  "synthetic": true,
+  "scope": "local fixture and deterministic evaluator only; not an x402 protocol rule",
+  "traceability": {
+    "v1_fixture": "reports/fixtures/x402-2833-resolver-authority-vector-20260919.json",
+    "v1_canonical_commit": "aeec88d92085f6ac36f0c10dc18e8640214232e2"
+  },
+  "canonicalization": {
+    "method": "json.dumps(sort_keys=True, separators=(',', ':'))",
+    "digest": "sha256(canonical authority configuration bytes)",
+    "meaning": "commits to supplied authority configuration bytes only; does not prove authority validity, trusted ordering, historical existence, or operator standing"
+  },
+  "shared_inputs": {
+    "evidence": {
+      "evidence_id": "E-2833-same-evidence",
+      "evidence_hash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "valid": true,
+      "observed_sequence": 10
+    },
+    "lifecycle": {
+      "lifecycle_id": "L-2833-same-lifecycle",
+      "bound": true
+    }
+  },
+  "resolutions": {
+    "resolver_A": {"resolution_id": "resolution-A", "resolver_id": "resolver-A", "check_set_id": "check-set-A", "internally_valid": true, "successor_state": "state-A"},
+    "resolver_B": {"resolution_id": "resolution-B", "resolver_id": "resolver-B", "check_set_id": "check-set-B", "internally_valid": true, "successor_state": "state-B"},
+    "resolver_C": {"resolution_id": "resolution-C", "resolver_id": "resolver-C", "check_set_id": "check-set-C", "internally_valid": true, "successor_state": "state-C"}
+  },
+  "cases": [
+    {
+      "id": "case-empty-authority-set",
+      "authority_commitment": {"policy_version": "resolver-policy-v2", "commitment_sequence": 1, "authorized_resolutions": [], "conflict_rule": null},
+      "expected": {"resolver_A": {"resolution_valid": true, "resolver_authorized": false, "authority_prior": true, "transition_allowed": false, "classification": "BLOCKED", "reason": "NO_AUTHORIZED_RESOLUTIONS"}}
+    },
+    {
+      "id": "case-null-authority",
+      "authority_commitment": null,
+      "expected": {"resolver_A": {"resolution_valid": true, "resolver_authorized": false, "transition_allowed": false, "classification": "BLOCKED", "reason": "NO_PRECOMMITTED_AUTHORITY"}}
+    },
+    {
+      "id": "case-only-A-authorized",
+      "authority_commitment": {"policy_version": "resolver-policy-v2", "commitment_sequence": 1, "authorized_resolutions": [{"resolver_id": "resolver-A", "check_set_id": "check-set-A", "permitted_successor_state": "state-A"}], "conflict_rule": null},
+      "expected": {"resolver_A": {"resolution_valid": true, "resolver_authorized": true, "authority_prior": true, "transition_allowed": true, "classification": "ALLOWED", "reason": "AUTHORIZED_RESOLUTION"}, "resolver_B": {"resolution_valid": true, "resolver_authorized": false, "transition_allowed": false, "reason": "RESOLVER_NOT_PREAUTHORIZED"}}
+    },
+    {
+      "id": "case-late-authority",
+      "authority_commitment": {"policy_version": "resolver-policy-v2", "commitment_sequence": 11, "authorized_resolutions": [{"resolver_id": "resolver-A", "check_set_id": "check-set-A", "permitted_successor_state": "state-A"}], "conflict_rule": null},
+      "expected": {"resolver_A": {"resolution_valid": true, "resolver_authorized": false, "authority_prior": false, "transition_allowed": false, "classification": "BLOCKED", "reason": "AUTHORITY_NOT_PRIOR"}}
+    },
+    {
+      "id": "case-equal-sequence-authority",
+      "authority_commitment": {"policy_version": "resolver-policy-v2", "commitment_sequence": 10, "authorized_resolutions": [{"resolver_id": "resolver-A", "check_set_id": "check-set-A", "permitted_successor_state": "state-A"}], "conflict_rule": null},
+      "expected": {"resolver_A": {"resolution_valid": true, "resolver_authorized": false, "authority_prior": false, "transition_allowed": false, "reason": "AUTHORITY_NOT_PRIOR"}}
+    },
+    {
+      "id": "case-two-candidate-priority-order",
+      "authority_commitment": {"policy_version": "resolver-policy-v2", "commitment_sequence": 1, "authorized_resolutions": [{"resolver_id": "resolver-A", "check_set_id": "check-set-A", "permitted_successor_state": "state-A"}, {"resolver_id": "resolver-B", "check_set_id": "check-set-B", "permitted_successor_state": "state-B"}], "conflict_rule": {"type": "priority_order", "order": ["resolution-B", "resolution-A"]}},
+      "expected": {"resolver_A": {"resolution_valid": true, "resolver_authorized": true, "transition_allowed": false, "reason": "PRECOMMITTED_CONFLICT_RULE_NON_SELECTED"}, "resolver_B": {"resolution_valid": true, "resolver_authorized": true, "transition_allowed": true, "classification": "ALLOWED", "reason": "PRECOMMITTED_CONFLICT_RULE"}, "operative_successor_state": "state-B"}
+    },
+    {
+      "id": "case-three-candidate-priority-order",
+      "authority_commitment": {"policy_version": "resolver-policy-v2", "commitment_sequence": 1, "authorized_resolutions": [{"resolver_id": "resolver-A", "check_set_id": "check-set-A", "permitted_successor_state": "state-A"}, {"resolver_id": "resolver-B", "check_set_id": "check-set-B", "permitted_successor_state": "state-B"}, {"resolver_id": "resolver-C", "check_set_id": "check-set-C", "permitted_successor_state": "state-C"}], "conflict_rule": {"type": "priority_order", "order": ["resolution-C", "resolution-A", "resolution-B"]}},
+      "expected": {"resolver_A": {"resolution_valid": true, "resolver_authorized": true, "transition_allowed": false, "reason": "PRECOMMITTED_CONFLICT_RULE_NON_SELECTED"}, "resolver_B": {"resolution_valid": true, "resolver_authorized": true, "transition_allowed": false, "reason": "PRECOMMITTED_CONFLICT_RULE_NON_SELECTED"}, "resolver_C": {"resolution_valid": true, "resolver_authorized": true, "transition_allowed": true, "classification": "ALLOWED", "reason": "PRECOMMITTED_CONFLICT_RULE"}, "operative_successor_state": "state-C"}
+    },
+    {
+      "id": "case-multiple-authorized-no-rule",
+      "authority_commitment": {"policy_version": "resolver-policy-v2", "commitment_sequence": 1, "authorized_resolutions": [{"resolver_id": "resolver-A", "check_set_id": "check-set-A", "permitted_successor_state": "state-A"}, {"resolver_id": "resolver-B", "check_set_id": "check-set-B", "permitted_successor_state": "state-B"}], "conflict_rule": null},
+      "expected": {"resolver_A": {"resolution_valid": true, "resolver_authorized": true, "transition_allowed": false, "classification": "BLOCKED_INDETERMINATE", "reason": "CONFLICT_RULE_MISSING"}, "resolver_B": {"resolution_valid": true, "resolver_authorized": true, "transition_allowed": false, "classification": "BLOCKED_INDETERMINATE", "reason": "CONFLICT_RULE_MISSING"}}
+    }
+  ]
+}
