@@ -1,0 +1,758 @@
+{
+  "schema": "sar-primitive-vectors/v1",
+  "claim_ceiling": "PRIMITIVE_COMPATIBILITY_ONLY",
+  "not_established": [
+    "AIR-SAR composition",
+    "semantic equivalence",
+    "native cross-format verification",
+    "interchangeable receipt formats",
+    "adoption",
+    "deployment",
+    "dependency"
+  ],
+  "sar_stack_under_test": {
+    "jcs": "jcs 0.2.1 (PyPI) via sar_crypto_common.canonicalize (capsule-local)",
+    "json_parser": "python json.loads (stdlib)",
+    "ed25519": "cryptography Ed25519PublicKey via sar_crypto_common.verify_digest_signature (capsule-local)"
+  },
+  "test_keys": {
+    "test_key_1": {
+      "pubkey_b64url": "PGsrzWwzTvhti-qO88ab9R6t5M63nK_y5ji4qI-xsrc",
+      "provenance": "TEST ONLY. Ed25519 seed = SHA-256(UTF-8 label) with label 'sar-primitive-vectors-20261006/TEST-ONLY/key-1'. Not a production key; never used outside this corpus."
+    },
+    "test_key_2": {
+      "pubkey_b64url": "t9vrU-nWswe7OBBWyqOubqBai5lAwvdE9wk3Ex9wXyA",
+      "provenance": "TEST ONLY. Seed = SHA-256(UTF-8 label) with label 'sar-primitive-vectors-20261006/TEST-ONLY/key-2-wrong-key'. Used only as wrong-key negative."
+    }
+  },
+  "test_key_labels": {
+    "test_key_1": "sar-primitive-vectors-20261006/TEST-ONLY/key-1"
+  },
+  "result_vocabulary": [
+    "ESTABLISHED",
+    "REJECTED",
+    "NOT_APPLICABLE"
+  ],
+  "cases": [
+    {
+      "case_id": "REUSE-1",
+      "category": "A_INTEGER_ONLY_JCS|F_FLOAT (reused SAR v0.1 core)",
+      "description": "Reused SAR v0.1 six-field core (task_id_hash, verdict, confidence=0.99, reason_code, ts, verifier_kid) extracted from the xMandate fixture. Contains numeric confidence 0.99, so it is the SAR-valid float case; canonical bytes pinned from the fixture's own canonical_payload and independently recomputed by the runner.",
+      "input": {
+        "kind": "reused_artifact",
+        "artifact_id": "XMANDATE-SAR-0.1",
+        "json_pointer": "/receipt",
+        "extract": "six_field_core"
+      },
+      "sar_expected_behavior": "ESTABLISHED",
+      "profile_note": "SAR v0.1 contains numeric confidence. AIR's current profile rejects non-integer JSON numbers in AIR entries. AIR EXPECTED REJECT is a profile difference, not a shared-primitive failure. A foreign SAR artifact may still be referenced by hash without being re-canonicalized as an AIR entry.",
+      "air_profile_admissibility": "EXPECTED_REJECT (non-integer JSON number 0.99) -- profile difference, not primitive failure",
+      "expect": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b22636f6e666964656e6365223a302e39392c22726561736f6e5f636f6465223a22535045435f4d41544348222c227461736b5f69645f68617368223a227368613235363a39343663303430616433666535613365306465666461646232653539393633636230636133346363646266313534303963363932623063373731303464383137222c227473223a22323032362d30362d30355430303a30303a30305a222c2276657264696374223a2250415353222c2276657269666965725f6b6964223a226d6f7270686575732d666978747572652d656432353531392d3031227d",
+          "canonical_utf8": "{\"confidence\":0.99,\"reason_code\":\"SPEC_MATCH\",\"task_id_hash\":\"sha256:946c040ad3fe5a3e0defdadb2e59963cb0ca34ccdbf15409c692b0c77104d817\",\"ts\":\"2026-06-05T00:00:00Z\",\"verdict\":\"PASS\",\"verifier_kid\":\"morpheus-fixture-ed25519-01\"}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "1ca6e90d735c5e104ca0755b3d812c519d077e50a0e23e2f30ed378ef9cda7a7",
+          "over": "canonical_bytes"
+        },
+        "receipt_id": {
+          "status": "ESTABLISHED",
+          "value": "sha256:1ca6e90d735c5e104ca0755b3d812c519d077e50a0e23e2f30ed378ef9cda7a7"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b22636f6e666964656e6365223a302e39392c22726561736f6e5f636f6465223a22535045435f4d41544348222c227461736b5f69645f68617368223a227368613235363a39343663303430616433666535613365306465666461646232653539393633636230636133346363646266313534303963363932623063373731303464383137222c227473223a22323032362d30362d30355430303a30303a30305a222c2276657264696374223a2250415353222c2276657269666965725f6b6964223a226d6f7270686575732d666978747572652d656432353531392d3031227d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        }
+      }
+    },
+    {
+      "case_id": "REUSE-2-ED25519",
+      "category": "H_ED25519",
+      "description": "POSITIVE (reused): Ed25519 signature of the xMandate SAR fixture. Signed bytes = 32-byte SHA-256 digest of the REUSE-1 canonical bytes (SAR v0.1 convention).",
+      "signature_check": {
+        "pubkey_b64url": "6OIMvWNGOHyaeWeVqhhRoJz16fqNvXvLyCu8pR9iheM",
+        "preimage_hex": "1ca6e90d735c5e104ca0755b3d812c519d077e50a0e23e2f30ed378ef9cda7a7",
+        "signature_b64url": "uEhf4mNYJAf6TBStMHf3-vL0u5sHGs6WpLHrrbr6fkBTW_xNNvvaHFpIdBqTYoT_fI7IxU_Nt366IZDPmG7rCA",
+        "expected_verify": "ESTABLISHED",
+        "signed_preimage": "SHA256_DIGEST_BYTES_OF_JCS_CANONICAL_BYTES",
+        "preimage_derivation": {
+          "from_case": "REUSE-1",
+          "transform": "sha256_of_canonical_bytes"
+        },
+        "key_provenance": "test key from reused fixture ('deterministic local fixture seed'); TEST ONLY; private key not present in this corpus",
+        "portable_verifier_check": {
+          "artifact_id": "XMANDATE-SAR-0.1",
+          "json_pointer": "/receipt",
+          "kid": "morpheus-fixture-ed25519-01",
+          "expected": "VALID"
+        }
+      }
+    },
+    {
+      "case_id": "INT-1",
+      "category": "A_INTEGER_ONLY_JCS",
+      "description": "Integer-only object with unsorted keys, nested array, negative integer, zero, bool, null, escaped string. No floats; both implementations should agree byte-for-byte.",
+      "input": {
+        "kind": "json_text",
+        "text": "{\"z\":[3,2,1],\"b\":-7,\"a\":0,\"n\":null,\"t\":true,\"s\":\"q\\\"\\\\\\u0041\\n\"}"
+      },
+      "sar_expected_behavior": "ESTABLISHED",
+      "profile_note": "Integer-only: no profile dispute expected.",
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "expect": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2261223a302c2262223a2d372c226e223a6e756c6c2c2273223a22715c225c5c415c6e222c2274223a747275652c227a223a5b332c322c315d7d",
+          "canonical_utf8": "{\"a\":0,\"b\":-7,\"n\":null,\"s\":\"q\\\"\\\\A\\n\",\"t\":true,\"z\":[3,2,1]}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "ab6962f89edb4cb90c8cebf9010fc65b1d3b06a6bf38afbfc241a4cedca0b8e8",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2261223a302c2262223a2d372c226e223a6e756c6c2c2273223a22715c225c5c415c6e222c2274223a747275652c227a223a5b332c322c315d7d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        }
+      }
+    },
+    {
+      "case_id": "INT-2",
+      "category": "A_INTEGER_ONLY_JCS",
+      "description": "Integer-only object shaped like a SAR core but with integer confidence (basis points). Not a valid SAR v0.1 core; shape used only to exercise JCS+SHA-256 on integer-only input.",
+      "input": {
+        "kind": "json_text",
+        "text": "{\"verifier_kid\":\"test-key-1\",\"ts\":\"2026-10-06T00:00:00Z\",\"reason_code\":\"OK\",\"confidence\":9100,\"verdict\":\"PASS\",\"task_id_hash\":\"sha256:00\"}"
+      },
+      "sar_expected_behavior": "ESTABLISHED",
+      "profile_note": "Shape is illustrative only; SAR v0.1 confidence is numeric (see FLOAT cases). Not a conformant SAR artifact.",
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "expect": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b22636f6e666964656e6365223a393130302c22726561736f6e5f636f6465223a224f4b222c227461736b5f69645f68617368223a227368613235363a3030222c227473223a22323032362d31302d30365430303a30303a30305a222c2276657264696374223a2250415353222c2276657269666965725f6b6964223a22746573742d6b65792d31227d",
+          "canonical_utf8": "{\"confidence\":9100,\"reason_code\":\"OK\",\"task_id_hash\":\"sha256:00\",\"ts\":\"2026-10-06T00:00:00Z\",\"verdict\":\"PASS\",\"verifier_kid\":\"test-key-1\"}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "39107d9407fed9a8e225929cfb1ce611b0fbced732a5964eb8fc7745f85c1b57",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b22636f6e666964656e6365223a393130302c22726561736f6e5f636f6465223a224f4b222c227461736b5f69645f68617368223a227368613235363a3030222c227473223a22323032362d31302d30365430303a30303a30305a222c2276657264696374223a2250415353222c2276657269666965725f6b6964223a22746573742d6b65792d31227d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        }
+      }
+    },
+    {
+      "case_id": "UTF16-1",
+      "category": "B_UTF16_ASTRAL_KEY_ORDERING",
+      "description": "Keys U+1F600 (UTF-16 D83D DE00), U+E000, 'a'. RFC 8785 sorts by UTF-16 code units: a < U+1F600 < U+E000. Naive Unicode code-point order would place U+E000 before U+1F600 and so is discriminated.",
+      "input": {
+        "kind": "json_text",
+        "text": "{\"\\ue000\":2,\"\\ud83d\\ude00\":1,\"a\":3}"
+      },
+      "sar_expected_behavior": "ESTABLISHED",
+      "profile_note": "Ordering is UTF-16 code-unit order per RFC 8785 sec 3.2.3.",
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "expect": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2261223a332c22f09f9880223a312c22ee8080223a327d",
+          "canonical_utf8": "{\"a\":3,\"\ud83d\ude00\":1,\"\ue000\":2}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "a901d5c9340048b768183fd6fb82e7d0f7792049a0aafa9d2c7ccd845d984ad3",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2261223a332c22f09f9880223a312c22ee8080223a327d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        }
+      }
+    },
+    {
+      "case_id": "DUP-1",
+      "category": "C_DUPLICATE_KEYS",
+      "description": "Object with duplicate key 'a'. Current SAR stack (Python json.loads + jcs 0.2.1) does NOT reject: last value wins silently before canonicalization. Recorded as-is; NOT endorsed as RFC 8785/I-JSON-conformant handling.",
+      "input": {
+        "kind": "json_text",
+        "text": "{\"a\":1,\"a\":2}"
+      },
+      "sar_expected_behavior": "PARSE_ACCEPTED_SILENT_LAST_WINS__NOT_REJECTED",
+      "profile_note": "Boundary: duplicate detection is NOT performed by the SAR stack; corpus runner's strict detector flags it. A cross-implementation comparison must not treat the bytes as agreement if the other side rejects duplicates.",
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "expect": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": true
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2261223a327d",
+          "canonical_utf8": "{\"a\":2}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "7e8059f495589fcd981232cc11d00b00da3802c01d688fa1cf1f6bed6e5bb33c",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2261223a327d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        }
+      }
+    },
+    {
+      "case_id": "SURR-1",
+      "category": "D_LONE_SURROGATE",
+      "description": "String value containing lone high surrogate escape \\ud800. json.loads accepts it (parse ESTABLISHED); jcs 0.2.1 canonicalization REJECTS at UTF-8 encoding (UnicodeEncodeError).",
+      "input": {
+        "kind": "json_text",
+        "text": "{\"k\":\"\\ud800\"}"
+      },
+      "sar_expected_behavior": "PARSE_ACCEPTED__CANONICALIZATION_REJECTED_AT_UTF8_ENCODE",
+      "profile_note": "Rejection occurs inside canonicalization (UTF-8 encoding), not at the parser.",
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "expect": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "REJECTED",
+          "error_class": "UnicodeEncodeError"
+        },
+        "sha256": {
+          "status": "NOT_APPLICABLE"
+        },
+        "rfc8785": {
+          "status": "REJECTED",
+          "error_class": "CanonicalizationError",
+          "relation_to_sar_jcs": "BOTH_REJECTED"
+        }
+      }
+    },
+    {
+      "case_id": "SURR-2",
+      "category": "D_LONE_SURROGATE",
+      "description": "Lone low surrogate \\udc00 in an object KEY position.",
+      "input": {
+        "kind": "json_text",
+        "text": "{\"\\udc00\":1}"
+      },
+      "sar_expected_behavior": "PARSE_ACCEPTED__CANONICALIZATION_REJECTED_AT_UTF8_ENCODE",
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "expect": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "REJECTED",
+          "error_class": "UnicodeEncodeError"
+        },
+        "sha256": {
+          "status": "NOT_APPLICABLE"
+        },
+        "rfc8785": {
+          "status": "REJECTED",
+          "error_class": "UnicodeEncodeError",
+          "relation_to_sar_jcs": "BOTH_REJECTED"
+        }
+      }
+    },
+    {
+      "case_id": "SURR-3",
+      "category": "D_LONE_SURROGATE",
+      "description": "Control: VALID surrogate pair escape \\ud83d\\ude00 as a value; must canonicalize to UTF-8 F0 9F 98 80.",
+      "input": {
+        "kind": "json_text",
+        "text": "{\"k\":\"\\ud83d\\ude00\"}"
+      },
+      "sar_expected_behavior": "ESTABLISHED",
+      "profile_note": "Positive control distinguishing valid pairs from lone surrogates.",
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "expect": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b226b223a22f09f9880227d",
+          "canonical_utf8": "{\"k\":\"\ud83d\ude00\"}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "f073f1f05c0a1e01bf604e8ec5f389a64fdeb334e00f9456008269e852b1ff4a",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b226b223a22f09f9880227d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        }
+      }
+    },
+    {
+      "case_id": "NUM-1",
+      "category": "E_2POW53_BOUNDARY",
+      "description": "+2^53-1 (9007199254740991), largest safe integer.",
+      "input": {
+        "kind": "json_text",
+        "text": "{\"n\":9007199254740991}"
+      },
+      "sar_expected_behavior": "ESTABLISHED",
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "expect": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b226e223a393030373139393235343734303939317d",
+          "canonical_utf8": "{\"n\":9007199254740991}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "e1da48c6a6089f06ecb4e0a2259e658e3786b2420f52baccdf929ec6460d7b41",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b226e223a393030373139393235343734303939317d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        }
+      }
+    },
+    {
+      "case_id": "NUM-2",
+      "category": "E_2POW53_BOUNDARY",
+      "description": "+2^53 (9007199254740992).",
+      "input": {
+        "kind": "json_text",
+        "text": "{\"n\":9007199254740992}"
+      },
+      "sar_expected_behavior": "ESTABLISHED",
+      "profile_note": "Observed: bytes emitted by the SAR stack (jcs 0.2.1). Magnitude beyond 2^53 is an input-domain question (I-JSON / RFC 8785 sec 3.2.2.3 number serialization), separate from AIR admissibility.",
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "expect": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b226e223a393030373139393235343734303939327d",
+          "canonical_utf8": "{\"n\":9007199254740992}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "66c87d9cb3014e05a11baa97df62282d89d425f22ee15816577c84534e2ef1bb",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "REJECTED",
+          "error_class": "IntegerDomainError",
+          "relation_to_sar_jcs": "DIFFERENT_OUTCOME"
+        }
+      }
+    },
+    {
+      "case_id": "NUM-3",
+      "category": "E_2POW53_BOUNDARY",
+      "description": "+2^53+1 (9007199254740993). SAR stack silently emits ...992: bytes are produced but the input value is NOT preserved (lossy). Recorded, not endorsed.",
+      "input": {
+        "kind": "json_text",
+        "text": "{\"n\":9007199254740993}"
+      },
+      "sar_expected_behavior": "ESTABLISHED_BYTES__INPUT_VALUE_NOT_PRESERVED_LOSSY",
+      "profile_note": "Observed: bytes emitted by the SAR stack (jcs 0.2.1). Magnitude beyond 2^53 is an input-domain question (I-JSON / RFC 8785 sec 3.2.2.3 number serialization), separate from AIR admissibility.",
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "expect": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b226e223a393030373139393235343734303939327d",
+          "canonical_utf8": "{\"n\":9007199254740992}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "66c87d9cb3014e05a11baa97df62282d89d425f22ee15816577c84534e2ef1bb",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "REJECTED",
+          "error_class": "IntegerDomainError",
+          "relation_to_sar_jcs": "DIFFERENT_OUTCOME"
+        }
+      }
+    },
+    {
+      "case_id": "NUM-4",
+      "category": "E_2POW53_BOUNDARY",
+      "description": "-2^53 (-9007199254740992).",
+      "input": {
+        "kind": "json_text",
+        "text": "{\"n\":-9007199254740992}"
+      },
+      "sar_expected_behavior": "ESTABLISHED",
+      "profile_note": "Observed: bytes emitted by the SAR stack (jcs 0.2.1). Magnitude beyond 2^53 is an input-domain question (I-JSON / RFC 8785 sec 3.2.2.3 number serialization), separate from AIR admissibility.",
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "expect": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b226e223a2d393030373139393235343734303939327d",
+          "canonical_utf8": "{\"n\":-9007199254740992}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "b05a958438727696a33ea9f819b69ca4ea39b5ee89f0f80a61d5f813875f9734",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "REJECTED",
+          "error_class": "IntegerDomainError",
+          "relation_to_sar_jcs": "DIFFERENT_OUTCOME"
+        }
+      }
+    },
+    {
+      "case_id": "NUM-5",
+      "category": "E_2POW53_BOUNDARY",
+      "description": "-(2^53+1) (-9007199254740993). Same lossy behavior as NUM-3.",
+      "input": {
+        "kind": "json_text",
+        "text": "{\"n\":-9007199254740993}"
+      },
+      "sar_expected_behavior": "ESTABLISHED_BYTES__INPUT_VALUE_NOT_PRESERVED_LOSSY",
+      "profile_note": "Observed: bytes emitted by the SAR stack (jcs 0.2.1). Magnitude beyond 2^53 is an input-domain question (I-JSON / RFC 8785 sec 3.2.2.3 number serialization), separate from AIR admissibility.",
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "expect": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b226e223a2d393030373139393235343734303939327d",
+          "canonical_utf8": "{\"n\":-9007199254740992}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "b05a958438727696a33ea9f819b69ca4ea39b5ee89f0f80a61d5f813875f9734",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "REJECTED",
+          "error_class": "IntegerDomainError",
+          "relation_to_sar_jcs": "DIFFERENT_OUTCOME"
+        }
+      }
+    },
+    {
+      "case_id": "FLOAT-1",
+      "category": "F_FLOAT",
+      "description": "SAR-valid confidence-style value 0.91 (numeric confidence as used by SAR v0.1 core).",
+      "input": {
+        "kind": "json_text",
+        "text": "{\"confidence\":0.91}"
+      },
+      "sar_expected_behavior": "ESTABLISHED",
+      "profile_note": "SAR canonicalizes this input. AIR's profile is expected to REJECT non-integer JSON numbers in AIR entries; that is AIR_PROFILE_ADMISSIBILITY, a profile difference, NOT a shared-primitive failure.",
+      "air_profile_admissibility": "EXPECTED_REJECT (non-integer JSON number) -- profile difference, not primitive failure",
+      "expect": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b22636f6e666964656e6365223a302e39317d",
+          "canonical_utf8": "{\"confidence\":0.91}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "917ee2f800c6299c798234ab12ba84a416bd6439dd70b1fad1cab3f4a775662a",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b22636f6e666964656e6365223a302e39317d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        }
+      }
+    },
+    {
+      "case_id": "FLOAT-2",
+      "category": "F_FLOAT",
+      "description": "Integer-valued float token 1.0 canonicalizes to '1' under RFC 8785 number serialization.",
+      "input": {
+        "kind": "json_text",
+        "text": "{\"v\":1.0}"
+      },
+      "sar_expected_behavior": "ESTABLISHED",
+      "profile_note": "Token '1.0' is a float in the parser; JCS output is '1'. Whether AIR admits the token is an AIR profile question.",
+      "air_profile_admissibility": "PROFILE_DEPENDENT (AIR-side judgment; token is non-integer-literal)",
+      "expect": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2276223a317d",
+          "canonical_utf8": "{\"v\":1}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "afbf9d0f3560b0fd7795e81c42a0a79ee6b6fc67e064f77826aee642cad28d91",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2276223a317d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        }
+      }
+    },
+    {
+      "case_id": "FLOAT-3",
+      "category": "F_FLOAT",
+      "description": "Exponent-form numbers: 1e21 -> 1e+21, 1e-7 -> 1e-7 (ECMAScript Number-to-String).",
+      "input": {
+        "kind": "json_text",
+        "text": "{\"a\":1e21,\"b\":1e-7}"
+      },
+      "sar_expected_behavior": "ESTABLISHED",
+      "profile_note": "SAR canonicalizes this input. AIR's profile is expected to REJECT non-integer JSON numbers in AIR entries; that is AIR_PROFILE_ADMISSIBILITY, a profile difference, NOT a shared-primitive failure.",
+      "air_profile_admissibility": "EXPECTED_REJECT (non-integer JSON number) -- profile difference, not primitive failure",
+      "expect": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2261223a31652b32312c2262223a31652d377d",
+          "canonical_utf8": "{\"a\":1e+21,\"b\":1e-7}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "cacedbad459b60a9ce8903a2ee63536db6ee48a539c27e0f4c05f8f984024fa6",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2261223a31652b32312c2262223a31652d377d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        }
+      }
+    },
+    {
+      "case_id": "ED-2",
+      "category": "H_ED25519",
+      "description": "POSITIVE: integer-only core INT-2. Signed bytes = the 32-byte SHA-256 digest of INT-2's JCS canonical bytes (SAR v0.1 convention: sign digest bytes, NOT the canonical bytes).",
+      "signature_check": {
+        "pubkey_b64url": "PGsrzWwzTvhti-qO88ab9R6t5M63nK_y5ji4qI-xsrc",
+        "preimage_hex": "39107d9407fed9a8e225929cfb1ce611b0fbced732a5964eb8fc7745f85c1b57",
+        "signature_b64url": "O04szLSGGkPO1B4FkzY8gW2YJP3lyxObS1srPBQUMqB9NhXpUJakcldpWuwloDA-c1hq0m7sxivTV6tW8opfAQ",
+        "expected_verify": "ESTABLISHED",
+        "signed_preimage": "SHA256_DIGEST_BYTES_OF_JCS_CANONICAL_BYTES",
+        "preimage_derivation": {
+          "from_case": "INT-2",
+          "transform": "sha256_of_canonical_bytes"
+        },
+        "key_provenance": "test_key_1",
+        "deterministic_resign_check": true
+      }
+    },
+    {
+      "case_id": "ED-2-MUT-PREIMAGE",
+      "category": "H_ED25519",
+      "description": "NEGATIVE: one-bit flip in first byte of canonical preimage bytes, digest recomputed from mutated bytes, original signature.",
+      "signature_check": {
+        "pubkey_b64url": "PGsrzWwzTvhti-qO88ab9R6t5M63nK_y5ji4qI-xsrc",
+        "preimage_hex": "464961bad1ffa1b607da6ad50be11da65e32010748f11442a81ae97109063aa8",
+        "signature_b64url": "O04szLSGGkPO1B4FkzY8gW2YJP3lyxObS1srPBQUMqB9NhXpUJakcldpWuwloDA-c1hq0m7sxivTV6tW8opfAQ",
+        "expected_verify": "REJECTED",
+        "signed_preimage": "SHA256_DIGEST_BYTES_OF_MUTATED_JCS_CANONICAL_BYTES",
+        "mutation_of": "ED-2",
+        "mutation": "canonical byte 0 ^= 0x01, then SHA-256"
+      }
+    },
+    {
+      "case_id": "ED-2-MUT-DIGEST",
+      "category": "H_ED25519",
+      "description": "NEGATIVE: one-bit flip in digest byte 0, original signature.",
+      "signature_check": {
+        "pubkey_b64url": "PGsrzWwzTvhti-qO88ab9R6t5M63nK_y5ji4qI-xsrc",
+        "preimage_hex": "38107d9407fed9a8e225929cfb1ce611b0fbced732a5964eb8fc7745f85c1b57",
+        "signature_b64url": "O04szLSGGkPO1B4FkzY8gW2YJP3lyxObS1srPBQUMqB9NhXpUJakcldpWuwloDA-c1hq0m7sxivTV6tW8opfAQ",
+        "expected_verify": "REJECTED",
+        "signed_preimage": "MUTATED_SHA256_DIGEST_BYTES",
+        "mutation_of": "ED-2",
+        "mutation": "digest byte 0 ^= 0x01"
+      }
+    },
+    {
+      "case_id": "ED-2-MUT-SIG",
+      "category": "H_ED25519",
+      "description": "NEGATIVE: one-bit flip in signature byte 0, original digest.",
+      "signature_check": {
+        "pubkey_b64url": "PGsrzWwzTvhti-qO88ab9R6t5M63nK_y5ji4qI-xsrc",
+        "preimage_hex": "39107d9407fed9a8e225929cfb1ce611b0fbced732a5964eb8fc7745f85c1b57",
+        "signature_b64url": "Ok4szLSGGkPO1B4FkzY8gW2YJP3lyxObS1srPBQUMqB9NhXpUJakcldpWuwloDA-c1hq0m7sxivTV6tW8opfAQ",
+        "expected_verify": "REJECTED",
+        "signed_preimage": "SHA256_DIGEST_BYTES_OF_JCS_CANONICAL_BYTES",
+        "mutation_of": "ED-2",
+        "mutation": "signature byte 0 ^= 0x01"
+      }
+    },
+    {
+      "case_id": "ED-2-MUT-WRONG-KEY",
+      "category": "H_ED25519",
+      "description": "NEGATIVE: valid signature/digest verified against different TEST public key (key-2).",
+      "signature_check": {
+        "pubkey_b64url": "t9vrU-nWswe7OBBWyqOubqBai5lAwvdE9wk3Ex9wXyA",
+        "preimage_hex": "39107d9407fed9a8e225929cfb1ce611b0fbced732a5964eb8fc7745f85c1b57",
+        "signature_b64url": "O04szLSGGkPO1B4FkzY8gW2YJP3lyxObS1srPBQUMqB9NhXpUJakcldpWuwloDA-c1hq0m7sxivTV6tW8opfAQ",
+        "expected_verify": "REJECTED",
+        "signed_preimage": "SHA256_DIGEST_BYTES_OF_JCS_CANONICAL_BYTES",
+        "mutation_of": "ED-2",
+        "mutation": "public key replaced by independent TEST key-2 (sar-primitive-vectors-20261006/TEST-ONLY/key-2-wrong-key)"
+      }
+    },
+    {
+      "case_id": "ED-2-MUT-CONVENTION",
+      "category": "H_ED25519",
+      "description": "NEGATIVE: verifier presented RAW canonical bytes as preimage while the signature covers the digest bytes (SAR convention preserved; raw-bytes preimage must not verify).",
+      "signature_check": {
+        "pubkey_b64url": "PGsrzWwzTvhti-qO88ab9R6t5M63nK_y5ji4qI-xsrc",
+        "preimage_hex": "7b22636f6e666964656e6365223a393130302c22726561736f6e5f636f6465223a224f4b222c227461736b5f69645f68617368223a227368613235363a3030222c227473223a22323032362d31302d30365430303a30303a30305a222c2276657264696374223a2250415353222c2276657269666965725f6b6964223a22746573742d6b65792d31227d",
+        "signature_b64url": "O04szLSGGkPO1B4FkzY8gW2YJP3lyxObS1srPBQUMqB9NhXpUJakcldpWuwloDA-c1hq0m7sxivTV6tW8opfAQ",
+        "expected_verify": "REJECTED",
+        "signed_preimage": "RAW_JCS_CANONICAL_BYTES",
+        "mutation_of": "ED-2",
+        "mutation": "preimage convention changed from digest bytes to raw canonical bytes"
+      }
+    },
+    {
+      "case_id": "ED-2-ALT-RAW",
+      "category": "H_ED25519",
+      "description": "INFORMATIONAL (NOT SAR convention): the same key signing the RAW canonical bytes verifies over RAW canonical bytes. Included so a harness that signs raw bytes can be told apart from SAR's digest-bytes convention; does not alter SAR.",
+      "signature_check": {
+        "pubkey_b64url": "PGsrzWwzTvhti-qO88ab9R6t5M63nK_y5ji4qI-xsrc",
+        "preimage_hex": "7b22636f6e666964656e6365223a393130302c22726561736f6e5f636f6465223a224f4b222c227461736b5f69645f68617368223a227368613235363a3030222c227473223a22323032362d31302d30365430303a30303a30305a222c2276657264696374223a2250415353222c2276657269666965725f6b6964223a22746573742d6b65792d31227d",
+        "signature_b64url": "lG07OcBkcyRQjrQbSBO-E4xTtyV3f46sgCbDriwspoVVyx_R8N4pbukORHp229kmxjt3uz46lN2wkIsQszT6BA",
+        "expected_verify": "ESTABLISHED",
+        "signed_preimage": "RAW_JCS_CANONICAL_BYTES",
+        "preimage_derivation": {
+          "from_case": "INT-2",
+          "transform": "canonical_bytes"
+        },
+        "key_provenance": "test_key_1",
+        "convention_note": "NOT the SAR v0.1 signing convention"
+      }
+    },
+    {
+      "case_id": "REUSE-2-MUT-SIG",
+      "category": "H_ED25519",
+      "description": "NEGATIVE (reused): one-bit flip in signature byte 0.",
+      "signature_check": {
+        "pubkey_b64url": "6OIMvWNGOHyaeWeVqhhRoJz16fqNvXvLyCu8pR9iheM",
+        "preimage_hex": "1ca6e90d735c5e104ca0755b3d812c519d077e50a0e23e2f30ed378ef9cda7a7",
+        "signature_b64url": "uUhf4mNYJAf6TBStMHf3-vL0u5sHGs6WpLHrrbr6fkBTW_xNNvvaHFpIdBqTYoT_fI7IxU_Nt366IZDPmG7rCA",
+        "expected_verify": "REJECTED",
+        "signed_preimage": "SHA256_DIGEST_BYTES_OF_JCS_CANONICAL_BYTES",
+        "mutation_of": "REUSE-2-ED25519",
+        "mutation": "signature byte 0 ^= 0x01"
+      }
+    },
+    {
+      "case_id": "REUSE-2-MUT-PREIMAGE",
+      "category": "H_ED25519",
+      "description": "NEGATIVE (reused): canonical payload byte 0 flipped, digest recomputed, original signature.",
+      "signature_check": {
+        "pubkey_b64url": "6OIMvWNGOHyaeWeVqhhRoJz16fqNvXvLyCu8pR9iheM",
+        "preimage_hex": "02c4c51ad91a25058f68940f39bbc58222a7207ae8b9aa2de872b613ec72b979",
+        "signature_b64url": "uEhf4mNYJAf6TBStMHf3-vL0u5sHGs6WpLHrrbr6fkBTW_xNNvvaHFpIdBqTYoT_fI7IxU_Nt366IZDPmG7rCA",
+        "expected_verify": "REJECTED",
+        "signed_preimage": "SHA256_DIGEST_BYTES_OF_MUTATED_JCS_CANONICAL_BYTES",
+        "mutation_of": "REUSE-2-ED25519",
+        "mutation": "canonical byte 0 ^= 0x01, then SHA-256"
+      }
+    },
+    {
+      "case_id": "REUSE-2-MUT-FIELD",
+      "category": "H_ED25519",
+      "description": "NEGATIVE (reused): signed field mutated (confidence 0.99 -> 0.98) with receipt_id removed, run through the existing portable reader; must be INVALID_SIGNATURE. (With receipt_id retained the reader returns INVALID_RECEIPT_ID_MISMATCH.)",
+      "signature_check": {
+        "expected_verify": "REJECTED",
+        "signed_preimage": "SHA256_DIGEST_BYTES_OF_JCS_CANONICAL_BYTES_OF_MUTATED_CORE",
+        "mutation_of": "REUSE-2-ED25519",
+        "mutation": "receipt.confidence 0.99->0.98; receipt_id removed",
+        "portable_verifier_check": {
+          "artifact_id": "XMANDATE-SAR-0.1",
+          "json_pointer": "/receipt",
+          "kid": "morpheus-fixture-ed25519-01",
+          "mutate": {
+            "set": {
+              "confidence": 0.98
+            },
+            "delete": [
+              "receipt_id"
+            ]
+          },
+          "expected": "INVALID_SIGNATURE"
+        }
+      }
+    }
+  ],
+  "reused_artifacts": [
+    {
+      "artifact_id": "XMANDATE-SAR-0.1",
+      "path": "fixtures/xmandate-generated-sar-receipt-20260605T215954Z.json",
+      "file_sha256": "538b6d7bfd3ff215c3156c3085c47b636ac2c4a473617799f4f96cab682f3236",
+      "note": "SAR v0.1 fixture (sar-sdk generated, deterministic local fixture seed, TEST key), shipped inside this capsule; byte-identical to the private source copy."
+    }
+  ],
+  "case_count": 27,
+  "independent_implementation_observed": {
+    "rfc8785": "rfc8785 0.1.4 (PyPI), executed by run_vectors.py on the already-parsed value; observational, never aggregated with SAR-side outcomes"
+  }
+}

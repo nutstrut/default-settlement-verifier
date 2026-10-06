@@ -1,0 +1,21 @@
+{
+  "source": "sar-sdk",
+  "receipt": {
+    "receipt_version": "0.1",
+    "receipt_id": "sha256:1ca6e90d735c5e104ca0755b3d812c519d077e50a0e23e2f30ed378ef9cda7a7",
+    "task_id_hash": "sha256:946c040ad3fe5a3e0defdadb2e59963cb0ca34ccdbf15409c692b0c77104d817",
+    "verdict": "PASS",
+    "confidence": 0.99,
+    "reason_code": "SPEC_MATCH",
+    "ts": "2026-06-05T00:00:00Z",
+    "verifier_kid": "morpheus-fixture-ed25519-01",
+    "sig_alg": "Ed25519",
+    "sig": "base64url:uEhf4mNYJAf6TBStMHf3-vL0u5sHGs6WpLHrrbr6fkBTW_xNNvvaHFpIdBqTYoT_fI7IxU_Nt366IZDPmG7rCA"
+  },
+  "public_key_base64url": "6OIMvWNGOHyaeWeVqhhRoJz16fqNvXvLyCu8pR9iheM",
+  "canonical_payload": "{\"confidence\":0.99,\"reason_code\":\"SPEC_MATCH\",\"task_id_hash\":\"sha256:946c040ad3fe5a3e0defdadb2e59963cb0ca34ccdbf15409c692b0c77104d817\",\"ts\":\"2026-06-05T00:00:00Z\",\"verdict\":\"PASS\",\"verifier_kid\":\"morpheus-fixture-ed25519-01\"}",
+  "derived_receipt_id": "sha256:1ca6e90d735c5e104ca0755b3d812c519d077e50a0e23e2f30ed378ef9cda7a7",
+  "offline_verified": true,
+  "network_attempted_during_offline_verify": false,
+  "private_key_source": "deterministic local fixture seed"
+}

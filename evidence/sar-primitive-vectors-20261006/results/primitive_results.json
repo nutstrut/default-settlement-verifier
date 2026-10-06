@@ -1,0 +1,692 @@
+{
+  "schema": "sar-primitive-vector-results/v1",
+  "claim_ceiling": "PRIMITIVE_COMPATIBILITY_ONLY",
+  "vectors_file_sha256": "9692dfc5bd59cbbf6b8cad8f6a309786b3a07194a718c2952dd7506344db155f",
+  "cases_run": 27,
+  "failures": [],
+  "overall": "ALL_DECLARED_EXPECTATIONS_MATCHED",
+  "results": [
+    {
+      "case_id": "REUSE-1",
+      "category": "A_INTEGER_ONLY_JCS|F_FLOAT (reused SAR v0.1 core)",
+      "outcomes": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b22636f6e666964656e6365223a302e39392c22726561736f6e5f636f6465223a22535045435f4d41544348222c227461736b5f69645f68617368223a227368613235363a39343663303430616433666535613365306465666461646232653539393633636230636133346363646266313534303963363932623063373731303464383137222c227473223a22323032362d30362d30355430303a30303a30305a222c2276657264696374223a2250415353222c2276657269666965725f6b6964223a226d6f7270686575732d666978747572652d656432353531392d3031227d",
+          "canonical_utf8": "{\"confidence\":0.99,\"reason_code\":\"SPEC_MATCH\",\"task_id_hash\":\"sha256:946c040ad3fe5a3e0defdadb2e59963cb0ca34ccdbf15409c692b0c77104d817\",\"ts\":\"2026-06-05T00:00:00Z\",\"verdict\":\"PASS\",\"verifier_kid\":\"morpheus-fixture-ed25519-01\"}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "1ca6e90d735c5e104ca0755b3d812c519d077e50a0e23e2f30ed378ef9cda7a7",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b22636f6e666964656e6365223a302e39392c22726561736f6e5f636f6465223a22535045435f4d41544348222c227461736b5f69645f68617368223a227368613235363a39343663303430616433666535613365306465666461646232653539393633636230636133346363646266313534303963363932623063373731303464383137222c227473223a22323032362d30362d30355430303a30303a30305a222c2276657264696374223a2250415353222c2276657269666965725f6b6964223a226d6f7270686575732d666978747572652d656432353531392d3031227d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        },
+        "receipt_id": {
+          "status": "ESTABLISHED",
+          "value": "sha256:1ca6e90d735c5e104ca0755b3d812c519d077e50a0e23e2f30ed378ef9cda7a7"
+        },
+        "sar_behavior": "ESTABLISHED"
+      },
+      "air_profile_admissibility": "EXPECTED_REJECT (non-integer JSON number 0.99) -- profile difference, not primitive failure",
+      "assertions": {
+        "parse": "MATCH",
+        "canonicalization": "MATCH",
+        "sha256": "MATCH",
+        "receipt_id": "MATCH",
+        "rfc8785": "MATCH",
+        "sar_expected_behavior": "MATCH"
+      }
+    },
+    {
+      "case_id": "REUSE-2-ED25519",
+      "category": "H_ED25519",
+      "outcomes": {
+        "signature_verification": "ESTABLISHED",
+        "signed_preimage": "SHA256_DIGEST_BYTES_OF_JCS_CANONICAL_BYTES",
+        "preimage_sha256_hex": "dde5061459f5d332c2ea536034b407057d9345ef50cb8216e25c866b12813f9d",
+        "portable_reader_verify_signature": "VALID"
+      },
+      "assertions": {
+        "preimage_derivation": "MATCH",
+        "expected_verify": "MATCH",
+        "portable_verifier_check": "MATCH"
+      }
+    },
+    {
+      "case_id": "INT-1",
+      "category": "A_INTEGER_ONLY_JCS",
+      "outcomes": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2261223a302c2262223a2d372c226e223a6e756c6c2c2273223a22715c225c5c415c6e222c2274223a747275652c227a223a5b332c322c315d7d",
+          "canonical_utf8": "{\"a\":0,\"b\":-7,\"n\":null,\"s\":\"q\\\"\\\\A\\n\",\"t\":true,\"z\":[3,2,1]}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "ab6962f89edb4cb90c8cebf9010fc65b1d3b06a6bf38afbfc241a4cedca0b8e8",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2261223a302c2262223a2d372c226e223a6e756c6c2c2273223a22715c225c5c415c6e222c2274223a747275652c227a223a5b332c322c315d7d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        },
+        "sar_behavior": "ESTABLISHED"
+      },
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "assertions": {
+        "parse": "MATCH",
+        "canonicalization": "MATCH",
+        "sha256": "MATCH",
+        "rfc8785": "MATCH",
+        "sar_expected_behavior": "MATCH"
+      }
+    },
+    {
+      "case_id": "INT-2",
+      "category": "A_INTEGER_ONLY_JCS",
+      "outcomes": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b22636f6e666964656e6365223a393130302c22726561736f6e5f636f6465223a224f4b222c227461736b5f69645f68617368223a227368613235363a3030222c227473223a22323032362d31302d30365430303a30303a30305a222c2276657264696374223a2250415353222c2276657269666965725f6b6964223a22746573742d6b65792d31227d",
+          "canonical_utf8": "{\"confidence\":9100,\"reason_code\":\"OK\",\"task_id_hash\":\"sha256:00\",\"ts\":\"2026-10-06T00:00:00Z\",\"verdict\":\"PASS\",\"verifier_kid\":\"test-key-1\"}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "39107d9407fed9a8e225929cfb1ce611b0fbced732a5964eb8fc7745f85c1b57",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b22636f6e666964656e6365223a393130302c22726561736f6e5f636f6465223a224f4b222c227461736b5f69645f68617368223a227368613235363a3030222c227473223a22323032362d31302d30365430303a30303a30305a222c2276657264696374223a2250415353222c2276657269666965725f6b6964223a22746573742d6b65792d31227d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        },
+        "sar_behavior": "ESTABLISHED"
+      },
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "assertions": {
+        "parse": "MATCH",
+        "canonicalization": "MATCH",
+        "sha256": "MATCH",
+        "rfc8785": "MATCH",
+        "sar_expected_behavior": "MATCH"
+      }
+    },
+    {
+      "case_id": "UTF16-1",
+      "category": "B_UTF16_ASTRAL_KEY_ORDERING",
+      "outcomes": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2261223a332c22f09f9880223a312c22ee8080223a327d",
+          "canonical_utf8": "{\"a\":3,\"\ud83d\ude00\":1,\"\ue000\":2}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "a901d5c9340048b768183fd6fb82e7d0f7792049a0aafa9d2c7ccd845d984ad3",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2261223a332c22f09f9880223a312c22ee8080223a327d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        },
+        "sar_behavior": "ESTABLISHED"
+      },
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "assertions": {
+        "parse": "MATCH",
+        "canonicalization": "MATCH",
+        "sha256": "MATCH",
+        "rfc8785": "MATCH",
+        "sar_expected_behavior": "MATCH"
+      }
+    },
+    {
+      "case_id": "DUP-1",
+      "category": "C_DUPLICATE_KEYS",
+      "outcomes": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": true
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2261223a327d",
+          "canonical_utf8": "{\"a\":2}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "7e8059f495589fcd981232cc11d00b00da3802c01d688fa1cf1f6bed6e5bb33c",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2261223a327d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        },
+        "sar_behavior": "PARSE_ACCEPTED_SILENT_LAST_WINS__NOT_REJECTED"
+      },
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "assertions": {
+        "parse": "MATCH",
+        "canonicalization": "MATCH",
+        "sha256": "MATCH",
+        "rfc8785": "MATCH",
+        "sar_expected_behavior": "MATCH"
+      }
+    },
+    {
+      "case_id": "SURR-1",
+      "category": "D_LONE_SURROGATE",
+      "outcomes": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "REJECTED",
+          "error_class": "UnicodeEncodeError"
+        },
+        "sha256": {
+          "status": "NOT_APPLICABLE"
+        },
+        "rfc8785": {
+          "status": "REJECTED",
+          "error_class": "CanonicalizationError",
+          "relation_to_sar_jcs": "BOTH_REJECTED"
+        },
+        "sar_behavior": "PARSE_ACCEPTED__CANONICALIZATION_REJECTED_AT_UTF8_ENCODE"
+      },
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "assertions": {
+        "parse": "MATCH",
+        "canonicalization": "MATCH",
+        "sha256": "MATCH",
+        "rfc8785": "MATCH",
+        "sar_expected_behavior": "MATCH"
+      }
+    },
+    {
+      "case_id": "SURR-2",
+      "category": "D_LONE_SURROGATE",
+      "outcomes": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "REJECTED",
+          "error_class": "UnicodeEncodeError"
+        },
+        "sha256": {
+          "status": "NOT_APPLICABLE"
+        },
+        "rfc8785": {
+          "status": "REJECTED",
+          "error_class": "UnicodeEncodeError",
+          "relation_to_sar_jcs": "BOTH_REJECTED"
+        },
+        "sar_behavior": "PARSE_ACCEPTED__CANONICALIZATION_REJECTED_AT_UTF8_ENCODE"
+      },
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "assertions": {
+        "parse": "MATCH",
+        "canonicalization": "MATCH",
+        "sha256": "MATCH",
+        "rfc8785": "MATCH",
+        "sar_expected_behavior": "MATCH"
+      }
+    },
+    {
+      "case_id": "SURR-3",
+      "category": "D_LONE_SURROGATE",
+      "outcomes": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b226b223a22f09f9880227d",
+          "canonical_utf8": "{\"k\":\"\ud83d\ude00\"}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "f073f1f05c0a1e01bf604e8ec5f389a64fdeb334e00f9456008269e852b1ff4a",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b226b223a22f09f9880227d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        },
+        "sar_behavior": "ESTABLISHED"
+      },
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "assertions": {
+        "parse": "MATCH",
+        "canonicalization": "MATCH",
+        "sha256": "MATCH",
+        "rfc8785": "MATCH",
+        "sar_expected_behavior": "MATCH"
+      }
+    },
+    {
+      "case_id": "NUM-1",
+      "category": "E_2POW53_BOUNDARY",
+      "outcomes": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b226e223a393030373139393235343734303939317d",
+          "canonical_utf8": "{\"n\":9007199254740991}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "e1da48c6a6089f06ecb4e0a2259e658e3786b2420f52baccdf929ec6460d7b41",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b226e223a393030373139393235343734303939317d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        },
+        "sar_behavior": "ESTABLISHED"
+      },
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "assertions": {
+        "parse": "MATCH",
+        "canonicalization": "MATCH",
+        "sha256": "MATCH",
+        "rfc8785": "MATCH",
+        "sar_expected_behavior": "MATCH"
+      }
+    },
+    {
+      "case_id": "NUM-2",
+      "category": "E_2POW53_BOUNDARY",
+      "outcomes": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b226e223a393030373139393235343734303939327d",
+          "canonical_utf8": "{\"n\":9007199254740992}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "66c87d9cb3014e05a11baa97df62282d89d425f22ee15816577c84534e2ef1bb",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "REJECTED",
+          "error_class": "IntegerDomainError",
+          "relation_to_sar_jcs": "DIFFERENT_OUTCOME"
+        },
+        "sar_behavior": "ESTABLISHED"
+      },
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "assertions": {
+        "parse": "MATCH",
+        "canonicalization": "MATCH",
+        "sha256": "MATCH",
+        "rfc8785": "MATCH",
+        "sar_expected_behavior": "MATCH"
+      }
+    },
+    {
+      "case_id": "NUM-3",
+      "category": "E_2POW53_BOUNDARY",
+      "outcomes": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b226e223a393030373139393235343734303939327d",
+          "canonical_utf8": "{\"n\":9007199254740992}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "66c87d9cb3014e05a11baa97df62282d89d425f22ee15816577c84534e2ef1bb",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "REJECTED",
+          "error_class": "IntegerDomainError",
+          "relation_to_sar_jcs": "DIFFERENT_OUTCOME"
+        },
+        "sar_behavior": "ESTABLISHED_BYTES__INPUT_VALUE_NOT_PRESERVED_LOSSY"
+      },
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "assertions": {
+        "parse": "MATCH",
+        "canonicalization": "MATCH",
+        "sha256": "MATCH",
+        "rfc8785": "MATCH",
+        "sar_expected_behavior": "MATCH"
+      }
+    },
+    {
+      "case_id": "NUM-4",
+      "category": "E_2POW53_BOUNDARY",
+      "outcomes": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b226e223a2d393030373139393235343734303939327d",
+          "canonical_utf8": "{\"n\":-9007199254740992}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "b05a958438727696a33ea9f819b69ca4ea39b5ee89f0f80a61d5f813875f9734",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "REJECTED",
+          "error_class": "IntegerDomainError",
+          "relation_to_sar_jcs": "DIFFERENT_OUTCOME"
+        },
+        "sar_behavior": "ESTABLISHED"
+      },
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "assertions": {
+        "parse": "MATCH",
+        "canonicalization": "MATCH",
+        "sha256": "MATCH",
+        "rfc8785": "MATCH",
+        "sar_expected_behavior": "MATCH"
+      }
+    },
+    {
+      "case_id": "NUM-5",
+      "category": "E_2POW53_BOUNDARY",
+      "outcomes": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b226e223a2d393030373139393235343734303939327d",
+          "canonical_utf8": "{\"n\":-9007199254740992}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "b05a958438727696a33ea9f819b69ca4ea39b5ee89f0f80a61d5f813875f9734",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "REJECTED",
+          "error_class": "IntegerDomainError",
+          "relation_to_sar_jcs": "DIFFERENT_OUTCOME"
+        },
+        "sar_behavior": "ESTABLISHED_BYTES__INPUT_VALUE_NOT_PRESERVED_LOSSY"
+      },
+      "air_profile_admissibility": "NOT_EVALUATED_HERE (AIR-side judgment; out of scope for SAR-side corpus)",
+      "assertions": {
+        "parse": "MATCH",
+        "canonicalization": "MATCH",
+        "sha256": "MATCH",
+        "rfc8785": "MATCH",
+        "sar_expected_behavior": "MATCH"
+      }
+    },
+    {
+      "case_id": "FLOAT-1",
+      "category": "F_FLOAT",
+      "outcomes": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b22636f6e666964656e6365223a302e39317d",
+          "canonical_utf8": "{\"confidence\":0.91}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "917ee2f800c6299c798234ab12ba84a416bd6439dd70b1fad1cab3f4a775662a",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b22636f6e666964656e6365223a302e39317d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        },
+        "sar_behavior": "ESTABLISHED"
+      },
+      "air_profile_admissibility": "EXPECTED_REJECT (non-integer JSON number) -- profile difference, not primitive failure",
+      "assertions": {
+        "parse": "MATCH",
+        "canonicalization": "MATCH",
+        "sha256": "MATCH",
+        "rfc8785": "MATCH",
+        "sar_expected_behavior": "MATCH"
+      }
+    },
+    {
+      "case_id": "FLOAT-2",
+      "category": "F_FLOAT",
+      "outcomes": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2276223a317d",
+          "canonical_utf8": "{\"v\":1}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "afbf9d0f3560b0fd7795e81c42a0a79ee6b6fc67e064f77826aee642cad28d91",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2276223a317d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        },
+        "sar_behavior": "ESTABLISHED"
+      },
+      "air_profile_admissibility": "PROFILE_DEPENDENT (AIR-side judgment; token is non-integer-literal)",
+      "assertions": {
+        "parse": "MATCH",
+        "canonicalization": "MATCH",
+        "sha256": "MATCH",
+        "rfc8785": "MATCH",
+        "sar_expected_behavior": "MATCH"
+      }
+    },
+    {
+      "case_id": "FLOAT-3",
+      "category": "F_FLOAT",
+      "outcomes": {
+        "parse": {
+          "status": "ESTABLISHED",
+          "duplicate_keys_detected": false
+        },
+        "canonicalization": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2261223a31652b32312c2262223a31652d377d",
+          "canonical_utf8": "{\"a\":1e+21,\"b\":1e-7}"
+        },
+        "sha256": {
+          "status": "ESTABLISHED",
+          "digest_hex": "cacedbad459b60a9ce8903a2ee63536db6ee48a539c27e0f4c05f8f984024fa6",
+          "over": "canonical_bytes"
+        },
+        "rfc8785": {
+          "status": "ESTABLISHED",
+          "canonical_bytes_hex": "7b2261223a31652b32312c2262223a31652d377d",
+          "relation_to_sar_jcs": "IDENTICAL_BYTES"
+        },
+        "sar_behavior": "ESTABLISHED"
+      },
+      "air_profile_admissibility": "EXPECTED_REJECT (non-integer JSON number) -- profile difference, not primitive failure",
+      "assertions": {
+        "parse": "MATCH",
+        "canonicalization": "MATCH",
+        "sha256": "MATCH",
+        "rfc8785": "MATCH",
+        "sar_expected_behavior": "MATCH"
+      }
+    },
+    {
+      "case_id": "ED-2",
+      "category": "H_ED25519",
+      "outcomes": {
+        "signature_verification": "ESTABLISHED",
+        "signed_preimage": "SHA256_DIGEST_BYTES_OF_JCS_CANONICAL_BYTES",
+        "preimage_sha256_hex": "c8fb474213178393900d62eecc8fd39b163e12c14d5342caab31f9810c1d8bd0"
+      },
+      "assertions": {
+        "preimage_derivation": "MATCH",
+        "expected_verify": "MATCH",
+        "test_key_matches_label": "MATCH",
+        "deterministic_resign": "MATCH"
+      }
+    },
+    {
+      "case_id": "ED-2-MUT-PREIMAGE",
+      "category": "H_ED25519",
+      "outcomes": {
+        "signature_verification": "REJECTED",
+        "signed_preimage": "SHA256_DIGEST_BYTES_OF_MUTATED_JCS_CANONICAL_BYTES",
+        "preimage_sha256_hex": "934c538cab9cf6570af1ffbac1235fe608b8d6fbe0e2bbe092a115e3e6f0c408"
+      },
+      "assertions": {
+        "expected_verify": "MATCH"
+      }
+    },
+    {
+      "case_id": "ED-2-MUT-DIGEST",
+      "category": "H_ED25519",
+      "outcomes": {
+        "signature_verification": "REJECTED",
+        "signed_preimage": "MUTATED_SHA256_DIGEST_BYTES",
+        "preimage_sha256_hex": "007a685364f55390c7f1650d945908db2db8ffc48902130d249ab46c099e325b"
+      },
+      "assertions": {
+        "expected_verify": "MATCH"
+      }
+    },
+    {
+      "case_id": "ED-2-MUT-SIG",
+      "category": "H_ED25519",
+      "outcomes": {
+        "signature_verification": "REJECTED",
+        "signed_preimage": "SHA256_DIGEST_BYTES_OF_JCS_CANONICAL_BYTES",
+        "preimage_sha256_hex": "c8fb474213178393900d62eecc8fd39b163e12c14d5342caab31f9810c1d8bd0"
+      },
+      "assertions": {
+        "expected_verify": "MATCH"
+      }
+    },
+    {
+      "case_id": "ED-2-MUT-WRONG-KEY",
+      "category": "H_ED25519",
+      "outcomes": {
+        "signature_verification": "REJECTED",
+        "signed_preimage": "SHA256_DIGEST_BYTES_OF_JCS_CANONICAL_BYTES",
+        "preimage_sha256_hex": "c8fb474213178393900d62eecc8fd39b163e12c14d5342caab31f9810c1d8bd0"
+      },
+      "assertions": {
+        "expected_verify": "MATCH"
+      }
+    },
+    {
+      "case_id": "ED-2-MUT-CONVENTION",
+      "category": "H_ED25519",
+      "outcomes": {
+        "signature_verification": "REJECTED",
+        "signed_preimage": "RAW_JCS_CANONICAL_BYTES",
+        "preimage_sha256_hex": "39107d9407fed9a8e225929cfb1ce611b0fbced732a5964eb8fc7745f85c1b57"
+      },
+      "assertions": {
+        "expected_verify": "MATCH"
+      }
+    },
+    {
+      "case_id": "ED-2-ALT-RAW",
+      "category": "H_ED25519",
+      "outcomes": {
+        "signature_verification": "ESTABLISHED",
+        "signed_preimage": "RAW_JCS_CANONICAL_BYTES",
+        "preimage_sha256_hex": "39107d9407fed9a8e225929cfb1ce611b0fbced732a5964eb8fc7745f85c1b57"
+      },
+      "assertions": {
+        "preimage_derivation": "MATCH",
+        "expected_verify": "MATCH"
+      }
+    },
+    {
+      "case_id": "REUSE-2-MUT-SIG",
+      "category": "H_ED25519",
+      "outcomes": {
+        "signature_verification": "REJECTED",
+        "signed_preimage": "SHA256_DIGEST_BYTES_OF_JCS_CANONICAL_BYTES",
+        "preimage_sha256_hex": "dde5061459f5d332c2ea536034b407057d9345ef50cb8216e25c866b12813f9d"
+      },
+      "assertions": {
+        "expected_verify": "MATCH"
+      }
+    },
+    {
+      "case_id": "REUSE-2-MUT-PREIMAGE",
+      "category": "H_ED25519",
+      "outcomes": {
+        "signature_verification": "REJECTED",
+        "signed_preimage": "SHA256_DIGEST_BYTES_OF_MUTATED_JCS_CANONICAL_BYTES",
+        "preimage_sha256_hex": "6f467f5aaa70fa15e2df736ac9e07b59582b86b826dc172d97341fa4dea3cc8c"
+      },
+      "assertions": {
+        "expected_verify": "MATCH"
+      }
+    },
+    {
+      "case_id": "REUSE-2-MUT-FIELD",
+      "category": "H_ED25519",
+      "outcomes": {
+        "portable_reader_verify_signature": "INVALID_SIGNATURE",
+        "signature_verification": "REJECTED"
+      },
+      "assertions": {
+        "portable_verifier_check": "MATCH",
+        "expected_verify": "MATCH"
+      }
+    }
+  ]
+}
