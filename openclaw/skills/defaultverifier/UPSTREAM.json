@@ -1,0 +1,23 @@
+{
+  "source_repo": "defaultsettle-cli",
+  "source_commit": "5d5f4f4549443de36ce94672ef4a269d33c226d0",
+  "policy": "vendored byte-for-byte; never edit. Refresh by re-copying from a reviewed upstream commit and updating this file.",
+  "files": {
+    "scripts/verify_v02.py": {
+      "upstream": "defaultsettle/verify_v02.py",
+      "sha256": "f86663a9c3159b3ef9b343ffc07e5952f2ab7f0533bddf529a78b0c3ec6bfbec"
+    },
+    "trust/sar-keys-v02-snapshot.json": {
+      "upstream": "defaultsettle/sar-keys-v02-snapshot.json",
+      "sha256": "1a8baffeecb456e823f1d9e4a1f84e4b1dd7a5152a7b36ee06da37b0d0cebe86"
+    },
+    "trust/sar-keys-v02-snapshot.provenance.json": {
+      "upstream": "defaultsettle/sar-keys-v02-snapshot.provenance.json",
+      "sha256": "9c32267d45f7945728d6e4388c37d2f95900aa5767d38ae6a0b19ed5d49c2f57"
+    },
+    "tests/fixtures/vectors.json": {
+      "upstream": "tests/fixtures/v02/vectors.json (== Morpheus specs/default-settlement-v02-verification/v0.2-candidate/vectors.json @ b1e0a72)",
+      "sha256": "e9d9ea38a037b681ca69718b8420ff0f6516c3354ddb1d23c31af840f3f9550b"
+    }
+  }
+}
