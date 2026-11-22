@@ -504,3 +504,38 @@ def test_gate_fails_when_provenance_snapshot_file_not_the_declared_value(tmp_pat
 def test_provenance_names_the_actual_bundled_snapshot_file():
     prov = json.loads((ROOT / "trust" / "sar-keys-v02-snapshot.provenance.json").read_text())
     assert (ROOT / "trust" / prov["snapshot_file"]).is_file()
+
+
+def test_local_edits_only_provenance_and_only_snapshot_file():
+    pins = json.loads((ROOT / "UPSTREAM.json").read_text(encoding="utf-8"))
+    with_edits = {rel: meta["local_edits"] for rel, meta in pins["files"].items() if meta.get("local_edits")}
+    assert list(with_edits) == ["trust/sar-keys-v02-snapshot.provenance.json"]
+    assert list(with_edits["trust/sar-keys-v02-snapshot.provenance.json"]) == ["snapshot_file"]
+
+
+@pytest.mark.parametrize("rel,field", [
+    ("scripts/verify_v02.py", "snapshot_file"),                       # wrong file
+    ("trust/sar-keys-v02-snapshot.json", "snapshot_file"),            # wrong file
+    ("trust/sar-keys-v02-snapshot.provenance.json", "fetched_on"),    # wrong field
+])
+def test_gate_rejects_unexpected_local_edits(tmp_path, rel, field):
+    cli, skill = _fake_world(tmp_path)
+    pins = json.loads((skill / "UPSTREAM.json").read_text())
+    meta = pins["files"][rel]
+    if rel.endswith("provenance.json"):
+        meta["local_edits"] = {field: {"upstream": "x", "skill": "y"}}
+    else:
+        meta["local_edits"] = {field: {"upstream": "x", "skill": "y"}}
+        meta["upstream_sha256"] = meta["sha256"]
+    (skill / "UPSTREAM.json").write_text(json.dumps(pins))
+    with pytest.raises(gate.Gate, match="not permitted"):
+        gate.check_static(cli, skill)
+
+
+def test_gate_rejects_extra_field_alongside_declared_local_edit(tmp_path):
+    cli, skill = _fake_world(tmp_path)
+    pins = json.loads((skill / "UPSTREAM.json").read_text())
+    pins["files"]["trust/sar-keys-v02-snapshot.provenance.json"]["local_edits"]["fetched_on"] = {"upstream": "a", "skill": "b"}
+    (skill / "UPSTREAM.json").write_text(json.dumps(pins))
+    with pytest.raises(gate.Gate, match="not permitted"):
+        gate.check_static(cli, skill)

@@ -33,6 +33,10 @@ DEFAULT_SKILL_ROOT = HERE.parent
 VECTORS_UPSTREAM_PATH = "tests/fixtures/v02/vectors.json"
 
 
+# local_edits is allowed ONLY for the provenance file and ONLY for the snapshot filename field.
+ALLOWED_LOCAL_EDITS = {"trust/sar-keys-v02-snapshot.provenance.json": frozenset({"snapshot_file"})}
+
+
 class Gate(Exception):
     """A release-gate failure."""
 
@@ -72,6 +76,10 @@ def check_static(cli_repo: Path, skill_root: Path = DEFAULT_SKILL_ROOT) -> list[
         vendored = (skill_root / rel).read_bytes()
         pinned = _git(cli_repo, "show", "%s:%s" % (commit, up))
         edits = meta.get("local_edits")
+        if edits is not None or "upstream_sha256" in meta:
+            if rel not in ALLOWED_LOCAL_EDITS or not edits or set(edits) != ALLOWED_LOCAL_EDITS[rel]:
+                raise Gate("%s: local_edits %s not permitted (only %s)" % (
+                    rel, sorted(edits or []), {k: sorted(v) for k, v in ALLOWED_LOCAL_EDITS.items()}))
         if edits:
             # The only permitted deviation from byte-identity: a declared set of top-level JSON string
             # fields. Pinned upstream blob hash, vendored hash, and the exact field-level difference

@@ -1,17 +1,53 @@
 {
   "bundle": "defaultverifier",
   "version": "0.1.0",
-  "scope": "repository-only; defines what a future publication bundle may contain. Not shipped.",
+  "scope": "repository-only; defines exactly which files a publication bundle contains, with SHA-256 and size per file. Not shipped.",
   "files": [
-    "CHANGELOG.md",
-    "README.md",
-    "SKILL.md",
-    "examples/receipt-indeterminate.json",
-    "references/claim-boundary.md",
-    "scripts/verify_receipt_v02.py",
-    "scripts/verify_v02.py",
-    "trust/sar-keys-v02-snapshot.json",
-    "trust/sar-keys-v02-snapshot.provenance.json"
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "362131511e90d8895e4a3b6c16557dd4e83afb4cb3b7d493f3192a6ef017f343",
+      "size": 597
+    },
+    {
+      "path": "README.md",
+      "sha256": "884fa933a6ba0a7871b013496fbab02d21518afa3f3a06b55ab1933cbcb6e5f2",
+      "size": 4057
+    },
+    {
+      "path": "SKILL.md",
+      "sha256": "84c60ed706e21e3d7c9b13bbd03a8834134310eaecaa31bfc92f01d0f6ce422e",
+      "size": 4970
+    },
+    {
+      "path": "examples/receipt-indeterminate.json",
+      "sha256": "3ce4176189d3c265d4cdcf39b57fab230d0847db1120e89b5e8a3cd613514ace",
+      "size": 1854
+    },
+    {
+      "path": "references/claim-boundary.md",
+      "sha256": "bbac2e368e1beb9f2237e799c6509f7717dcc34267dcd08fbc89b0b3befb91c7",
+      "size": 2091
+    },
+    {
+      "path": "scripts/verify_receipt_v02.py",
+      "sha256": "bf4c35956cd7d38e2ff7616186e2997ef9ea635e3407eafc11ba68e8198746b7",
+      "size": 24615
+    },
+    {
+      "path": "scripts/verify_v02.py",
+      "sha256": "f86663a9c3159b3ef9b343ffc07e5952f2ab7f0533bddf529a78b0c3ec6bfbec",
+      "size": 26009
+    },
+    {
+      "path": "trust/sar-keys-v02-snapshot.json",
+      "sha256": "1a8baffeecb456e823f1d9e4a1f84e4b1dd7a5152a7b36ee06da37b0d0cebe86",
+      "size": 9817
+    },
+    {
+      "path": "trust/sar-keys-v02-snapshot.provenance.json",
+      "sha256": "d76a0c78cccc1b84c6f9cf640f4f7c55b26cf5fadb6cb92b71578aaa31d96826",
+      "size": 616
+    }
   ],
   "repository_only": [
     "MAINTAINING.md",
@@ -19,7 +55,24 @@
     "UPSTREAM.json",
     "tests/"
   ],
-  "forbidden_path_patterns": ["tests/", "vectors", "__pycache__", ".pyc", ".pytest_cache", ".git/", ".env", "check_upstream_parity", ".bak"],
-  "forbidden_text": ["/home/", "/Users/", "internal, unpublished", "PRIVATE KEY", "--cli-repo", "check_upstream_parity"],
+  "forbidden_path_patterns": [
+    "tests/",
+    "vectors",
+    "__pycache__",
+    ".pyc",
+    ".pytest_cache",
+    ".git/",
+    ".env",
+    "check_upstream_parity",
+    ".bak"
+  ],
+  "forbidden_text": [
+    "/home/",
+    "/Users/",
+    "PRIVATE KEY",
+    "internal, unpublished",
+    "--cli-repo",
+    "check_upstream_parity"
+  ],
   "max_total_bytes": 120000
 }

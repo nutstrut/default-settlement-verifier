@@ -1,8 +1,10 @@
 ---
 name: defaultverifier
 description: >-
-  Verifies existing Default Settlement receipts (0.2-candidate) offline, with no
-  network or credentials. Separates receipt validity from the issuer's PASS /
+  Use to verify a Default Settlement receipt (0.2-candidate) offline, with no
+  network or credentials, or to explain what a receipt does and does not prove
+  (e.g. "verify this receipt", "did it execute", "was payment final": it reports
+  only what the signed receipt establishes). Separates receipt validity from the issuer's PASS /
   FAIL / INDETERMINATE verdict and explains which signed properties are
   established, contradicted or not established. Verification only; it does not
   issue receipts or certify agents.

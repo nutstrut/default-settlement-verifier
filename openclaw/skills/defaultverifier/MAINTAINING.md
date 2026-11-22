@@ -60,6 +60,20 @@ each is asserted to diverge, and every other vector must match exactly.
 names the snapshot `sar-keys-snapshot.json`; the shipped file is `sar-keys-v02-snapshot.json`.
 `UPSTREAM.json` declares this under `local_edits` and the release gate verifies the file is
 identical to upstream except that field (plus both hashes). The snapshot bytes are unchanged.
+
+Clarification: `byte_identical_to` in the provenance file refers to the SNAPSHOT being byte-identical to
+`settlement-witness/sar-keys.json@cae818c`, not to the provenance JSON itself. The provenance JSON has
+exactly one declared local edit (the snapshot filename); the release gate enforces that this is the only
+allowed provenance divergence, and tests confirm `local_edits` is accepted only for the provenance file
+and only for the `snapshot_file` field.
+
+### Trust snapshot is shipped as-is (maintainer decision)
+
+`trust/sar-keys-v02-snapshot.json` is hash-pinned canonical trust material and is preserved byte-for-byte.
+Some metadata fields inside it (for example approval references, OPMA ids, internal report paths) are
+canonical registry metadata. They are not runtime instructions, secrets or credentials, and scrubbing them
+would break byte identity and reproducibility. Never edit the snapshot; the bundle checker does not
+secret-scan it differently from other shipped files, and refreshes produce a new snapshot with new provenance.
 When refreshing, re-apply the one-field edit and update `sha256` / `upstream_sha256`.
 
 ### Public bundle (publication gate; nothing here publishes)
@@ -72,8 +86,19 @@ python3 openclaw/skills/defaultverifier/tests/check_public_bundle.py --build /tm
 python3 openclaw/skills/defaultverifier/tests/check_public_bundle.py /tmp/dv-bundle           # validate a directory or .zip
 ```
 
-The check is offline and fails on tests, vectors, unexpected files, missing runtime files, caches
-or `.pyc`, repository-only files, and internal paths/wording in shipped text.
+`PUBLIC_BUNDLE.json` pins each shipped file's path, SHA-256 and size. After a deliberate edit to a shipped
+file, refresh with `check_public_bundle.py --write-hashes` and review the diff.
+
+The check is offline, never extracts a ZIP, and fails on: duplicate or case/Unicode-colliding entry names;
+symlinks and any non-regular file (directories are inspected with `lstat`; ZIP symlink entries are detected
+from Unix mode bits); absolute, traversal, `.`/`..`, backslash or drive-letter paths; tests, vectors, unexpected
+files, missing files, caches or `.pyc`, repository-only files; any shipped byte that differs from the manifest
+SHA-256; secret-like strings (PEM keys, `sk-`, GitHub, AWS, Slack tokens, bearer tokens, `KEY=`/`SECRET=`/`TOKEN=`
+assignments); and internal paths/endpoints (`/home/`, `/Users/`, localhost, loopback, RFC1918 addresses,
+worktree and working-branch names). Public URLs such as `https://defaultverifier.com` are allowed. Targeted
+patterns are used instead of entropy heuristics, so receipt ids, hashes and signatures are not flagged.
+Limitation: a ZIP entry whose Unix mode bits are absent cannot be identified as a symlink; such an entry
+would still be hash-checked against the manifest and could not pass as a required file unless its bytes match.
 
 ### Example receipt provenance
 
