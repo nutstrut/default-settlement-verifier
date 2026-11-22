@@ -1,5 +1,5 @@
 {
-  "snapshot_file": "sar-keys-snapshot.json",
+  "snapshot_file": "sar-keys-v02-snapshot.json",
   "source": "https://defaultverifier.com/.well-known/sar-keys.json",
   "fetched_on": "2026-11-17",
   "sha256": "1a8baffeecb456e823f1d9e4a1f84e4b1dd7a5152a7b36ee06da37b0d0cebe86",

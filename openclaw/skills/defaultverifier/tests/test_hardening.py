@@ -3,6 +3,7 @@ classifier collision, invalid-validity wording, release-gate parity, and a hosti
 side-effect audit. All offline."""
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import resource
@@ -329,7 +330,14 @@ def _fake_world(tmp_path):
     for rel, meta in pins["files"].items():
         dest = cli / gate._upstream_rel(meta["upstream"])
         dest.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(skill / rel, dest)
+        if meta.get("local_edits"):
+            obj = json.loads((skill / rel).read_text())
+            for field, ed in meta["local_edits"].items():
+                obj[field] = ed["upstream"]
+            dest.write_text(json.dumps(obj, indent=2) + "\n")
+            meta["upstream_sha256"] = hashlib.sha256(dest.read_bytes()).hexdigest()
+        else:
+            shutil.copyfile(skill / rel, dest)
     subprocess.run(["git", "init", "-q", str(cli)], check=True, env=GIT_ENV)
     _git(cli, "add", "-A")
     _git(cli, "commit", "-q", "-m", "canonical")
@@ -373,7 +381,7 @@ def test_gate_fails_when_vendored_bytes_differ_from_upstream(tmp_path, target, n
     cli, skill = _fake_world(tmp_path)
     with open(skill / target, "ab") as fh:
         fh.write(b"\n")
-    with pytest.raises(gate.Gate, match="vendored bytes differ|does not match the sha256"):
+    with pytest.raises(gate.Gate, match="vendored bytes differ|does not match the sha256|vendored bytes do not match"):
         gate.check_static(cli, skill)
 
 
@@ -464,3 +472,35 @@ def test_audit_driver_positive_control_detects_socket_and_write(tmp_path):
     p = subprocess.run([sys.executable, "-B", "-c", AUDIT_DRIVER, str(bad)], capture_output=True, text=True, timeout=30)
     events = json.loads([l for l in p.stderr.splitlines() if l.startswith("AUDIT:")][0][6:])
     assert any(e.startswith("socket.") for e in events) and any(e.startswith("write-open:") for e in events), events
+
+
+def test_gate_passes_with_declared_local_edit_and_names_it(tmp_path):
+    cli, skill = _fake_world(tmp_path)
+    lines = gate.check_static(cli, skill)
+    assert any("declared local_edits ['snapshot_file']" in l for l in lines)
+
+
+def test_gate_fails_on_undeclared_change_inside_locally_edited_file(tmp_path):
+    cli, skill = _fake_world(tmp_path)
+    prov = skill / "trust" / "sar-keys-v02-snapshot.provenance.json"
+    obj = json.loads(prov.read_text())
+    obj["fetched_on"] = "2030-01-01"
+    prov.write_text(json.dumps(obj, indent=2) + "\n")
+    pins = json.loads((skill / "UPSTREAM.json").read_text())
+    pins["files"]["trust/sar-keys-v02-snapshot.provenance.json"]["sha256"] = hashlib.sha256(prov.read_bytes()).hexdigest()
+    (skill / "UPSTREAM.json").write_text(json.dumps(pins))
+    with pytest.raises(gate.Gate, match="beyond the declared local_edits"):
+        gate.check_static(cli, skill)
+
+
+def test_gate_fails_when_provenance_snapshot_file_not_the_declared_value(tmp_path):
+    cli, skill = _fake_world(tmp_path)
+    prov = skill / "trust" / "sar-keys-v02-snapshot.provenance.json"
+    prov.write_text(prov.read_text().replace("sar-keys-v02-snapshot.json", "other.json"))
+    with pytest.raises(gate.Gate, match="vendored bytes do not match"):
+        gate.check_static(cli, skill)
+
+
+def test_provenance_names_the_actual_bundled_snapshot_file():
+    prov = json.loads((ROOT / "trust" / "sar-keys-v02-snapshot.provenance.json").read_text())
+    assert (ROOT / "trust" / prov["snapshot_file"]).is_file()

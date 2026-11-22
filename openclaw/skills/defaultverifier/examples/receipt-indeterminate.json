@@ -1,0 +1,40 @@
+{
+  "receipt_profile": "settlement-witness-verified-v0.2",
+  "receipt_version": "0.2-candidate",
+  "sig_alg": "Ed25519",
+  "verdict": "INDETERMINATE",
+  "reason_code": "CONDITION_NOT_EVALUABLE",
+  "properties": {
+    "declared_condition_satisfied": "unknown",
+    "evidence_digest_binding": "pass",
+    "runtime_execution_established": "unknown",
+    "payment_finality_established": "unknown",
+    "legal_finality_established": "unknown"
+  },
+  "verification_basis": {
+    "evaluator_id": "agent:defaultsettlement:settlement-witness-deterministic-evaluator",
+    "evaluator_version": "det-eval-v0.1+330c574c15f9",
+    "evaluation_profile": "ds.evaluation.deterministic_acceptance_spec.v0.1",
+    "policy_ref": "ds.policy.settlement-witness.production.v0.2",
+    "condition_digest": "sha256:3c82ec76201c77de24389e666c0d97b62d593b7f75c3d4671fe28f65fd3e5f75",
+    "evidence_profile": "ds.evidence.json_output.v0.1",
+    "evidence_digest": "sha256:3c82ec76201c77de24389e666c0d97b62d593b7f75c3d4671fe28f65fd3e5f75",
+    "request_id": "profile-check",
+    "evaluated_at": "2026-09-08T14:22:05.366965Z"
+  },
+  "verifier_kid": "sar-prod-ed25519-06",
+  "ts": "2026-09-08T14:22:05.366965Z",
+  "receipt_id": "sha256:3f01ef33763f9f2bcad259b53ec3a218210b74f909df1af15aa6ffd8f8796d9c",
+  "sig": "base64url:sOvYNOQwtRtHCEpvVSYNlECTFN_XxzR3u50Wh6HOF_dAlioHdUqSVRCkUmlHu6PfpFs4C03-9bO__feMnnFWAQ",
+  "payment": {
+    "fee_usd": 0.001,
+    "status": "requested_not_enforced",
+    "model": "x402",
+    "message": "A verification fee is requested for this endpoint, but not currently enforced during early adoption.",
+    "incentive": "Top-tier agents will receive permanent free-tier benefits when enforcement begins.",
+    "networks": {
+      "base": "0xCe52D13FeBF8144d2e71C4a18ed26e6098D72863",
+      "solana": "4DbbwiCrpFSZnBFneyksmXyXiC69k4RzdiQ3fjoXmE31"
+    }
+  }
+}

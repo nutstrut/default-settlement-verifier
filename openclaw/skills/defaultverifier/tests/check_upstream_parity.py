@@ -71,6 +71,32 @@ def check_static(cli_repo: Path, skill_root: Path = DEFAULT_SKILL_ROOT) -> list[
         up = _upstream_rel(meta["upstream"])
         vendored = (skill_root / rel).read_bytes()
         pinned = _git(cli_repo, "show", "%s:%s" % (commit, up))
+        edits = meta.get("local_edits")
+        if edits:
+            # The only permitted deviation from byte-identity: a declared set of top-level JSON string
+            # fields. Pinned upstream blob hash, vendored hash, and the exact field-level difference
+            # are all checked, so this is no weaker than byte-identity for everything else.
+            if hashlib.sha256(pinned).hexdigest() != meta.get("upstream_sha256"):
+                raise Gate("%s: upstream blob at %s does not match the upstream_sha256 pinned in UPSTREAM.json" % (up, commit[:7]))
+            if hashlib.sha256(vendored).hexdigest() != meta["sha256"]:
+                raise Gate("%s: vendored bytes do not match the sha256 pinned in UPSTREAM.json" % rel)
+            try:
+                up_obj, my_obj = json.loads(pinned), json.loads(vendored)
+            except ValueError:
+                raise Gate("%s: local_edits require JSON on both sides" % rel)
+            expected = dict(up_obj)
+            for field, ed in edits.items():
+                if expected.get(field) != ed["upstream"]:
+                    raise Gate("%s: upstream field %r is not the declared %r" % (up, field, ed["upstream"]))
+                expected[field] = ed["skill"]
+            if my_obj != expected:
+                raise Gate("%s: vendored copy differs from upstream beyond the declared local_edits" % rel)
+            log.append("identical to upstream at pinned commit except declared local_edits %s: %s (sha256 %s)" % (
+                sorted(edits), rel, meta["sha256"][:12]))
+            latest = _git(cli_repo, "show", "HEAD:" + up)
+            if latest != pinned:
+                raise Gate("DRIFT: %s changed upstream between %s and HEAD %s; refresh the vendored copy deliberately" % (up, commit[:7], head[:7]))
+            continue
         if hashlib.sha256(pinned).hexdigest() != meta["sha256"]:
             raise Gate("%s: upstream blob at %s does not match the sha256 pinned in UPSTREAM.json" % (up, commit[:7]))
         if vendored != pinned:
