@@ -1,0 +1,25 @@
+{
+  "bundle": "defaultverifier",
+  "version": "0.1.0",
+  "scope": "repository-only; defines what a future publication bundle may contain. Not shipped.",
+  "files": [
+    "CHANGELOG.md",
+    "README.md",
+    "SKILL.md",
+    "examples/receipt-indeterminate.json",
+    "references/claim-boundary.md",
+    "scripts/verify_receipt_v02.py",
+    "scripts/verify_v02.py",
+    "trust/sar-keys-v02-snapshot.json",
+    "trust/sar-keys-v02-snapshot.provenance.json"
+  ],
+  "repository_only": [
+    "MAINTAINING.md",
+    "PUBLIC_BUNDLE.json",
+    "UPSTREAM.json",
+    "tests/"
+  ],
+  "forbidden_path_patterns": ["tests/", "vectors", "__pycache__", ".pyc", ".pytest_cache", ".git/", ".env", "check_upstream_parity", ".bak"],
+  "forbidden_text": ["/home/", "/Users/", "internal, unpublished", "PRIVATE KEY", "--cli-repo", "check_upstream_parity"],
+  "max_total_bytes": 120000
+}
